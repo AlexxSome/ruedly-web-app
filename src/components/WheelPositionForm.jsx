@@ -11,7 +11,11 @@ import {
   MenuItem,
   FormControl,
   InputLabel,
-  IconButton
+  IconButton,
+  RadioGroup,
+  FormControlLabel,
+  Radio,
+  Divider
 } from '@mui/material';
 import { Add, Delete, Calculate, Settings } from '@mui/icons-material';
 
@@ -34,6 +38,15 @@ function WheelPositionForm({ onSubmit }) {
   const [wheels, setWheels] = useState([
     { hardness: '', quantity: '' }
   ]);
+  const [userData, setUserData] = useState({
+    disciplina: '',
+    pesoKg: '',
+    experiencia: '',
+    estilo: '',
+    suelo: '',
+    temperatura: 'sin especificar',
+    priority: ''
+  });
   const [errors, setErrors] = useState({});
 
   const handleAddWheel = () => {
@@ -60,10 +73,25 @@ function WheelPositionForm({ onSubmit }) {
     }
   };
 
+  const handleUserDataChange = (field) => (event) => {
+    const value = event.target.value;
+    setUserData(prev => ({ ...prev, [field]: value }));
+    
+    // Limpiar error
+    if (errors[field]) {
+      setErrors(prev => {
+        const newErrors = { ...prev };
+        delete newErrors[field];
+        return newErrors;
+      });
+    }
+  };
+
   const validate = () => {
     const newErrors = {};
     let totalWheels = 0;
 
+    // Validar ruedas
     wheels.forEach((wheel, index) => {
       if (!wheel.hardness) {
         newErrors[`wheel_${index}_hardness`] = 'Selecciona una dureza';
@@ -78,6 +106,14 @@ function WheelPositionForm({ onSubmit }) {
     if (totalWheels !== 8) {
       newErrors.total = `Debes tener exactamente 8 ruedas. Total actual: ${totalWheels}`;
     }
+
+    // Validar datos del usuario
+    if (!userData.disciplina) newErrors.disciplina = 'Selecciona una disciplina';
+    if (!userData.pesoKg || userData.pesoKg <= 0) newErrors.pesoKg = 'Ingresa un peso válido';
+    if (!userData.experiencia) newErrors.experiencia = 'Selecciona tu nivel de experiencia';
+    if (!userData.estilo) newErrors.estilo = 'Selecciona un estilo';
+    if (!userData.suelo) newErrors.suelo = 'Selecciona un tipo de suelo';
+    if (!userData.priority) newErrors.priority = 'Selecciona una prioridad';
 
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
@@ -94,7 +130,10 @@ function WheelPositionForm({ onSubmit }) {
           quantity: parseInt(w.quantity)
         }));
       
-      onSubmit(wheelsData);
+      onSubmit({
+        wheels: wheelsData,
+        userData: userData
+      });
     }
   };
 
@@ -108,11 +147,155 @@ function WheelPositionForm({ onSubmit }) {
     <Paper elevation={3} sx={{ p: 3 }}>
       <Typography variant="h5" gutterBottom sx={{ mb: 3, fontWeight: 'bold', display: 'flex', alignItems: 'center', gap: 1 }}>
         <Settings sx={{ color: 'primary.main' }} />
-        Ruedas Disponibles
+        Posicionamiento de Ruedas
       </Typography>
 
       <form onSubmit={handleSubmit}>
+        {/* Sección: Datos del Usuario */}
+        <Box sx={{ mb: 4 }}>
+          <Typography variant="h6" gutterBottom sx={{ mb: 2, color: 'primary.main' }}>
+            Información del Patinador
+          </Typography>
+          <Grid container spacing={2}>
+            {/* Disciplina */}
+            <Grid item xs={12} sm={6}>
+              <FormControl fullWidth error={!!errors.disciplina}>
+                <InputLabel>Disciplina</InputLabel>
+                <Select
+                  value={userData.disciplina}
+                  onChange={handleUserDataChange('disciplina')}
+                  label="Disciplina"
+                >
+                  <MenuItem value="velocidad">Velocidad</MenuItem>
+                  <MenuItem value="fondo">Fondo</MenuItem>
+                  <MenuItem value="skate cross">Skate Cross</MenuItem>
+                  <MenuItem value="derrapes">Derrapes</MenuItem>
+                  <MenuItem value="free style (calle)">Free Style (Calle)</MenuItem>
+                </Select>
+                {errors.disciplina && <FormHelperText>{errors.disciplina}</FormHelperText>}
+              </FormControl>
+            </Grid>
+
+            {/* Peso */}
+            <Grid item xs={12} sm={6}>
+              <TextField
+                fullWidth
+                type="number"
+                label="Peso (kg)"
+                value={userData.pesoKg}
+                onChange={handleUserDataChange('pesoKg')}
+                placeholder="Ej: 70"
+                error={!!errors.pesoKg}
+                helperText={errors.pesoKg}
+              />
+            </Grid>
+
+            {/* Experiencia */}
+            <Grid item xs={12} sm={6}>
+              <FormControl fullWidth error={!!errors.experiencia}>
+                <InputLabel>Experiencia</InputLabel>
+                <Select
+                  value={userData.experiencia}
+                  onChange={handleUserDataChange('experiencia')}
+                  label="Experiencia"
+                >
+                  <MenuItem value="principiante">Principiante</MenuItem>
+                  <MenuItem value="intermedio">Intermedio</MenuItem>
+                  <MenuItem value="avanzado">Avanzado</MenuItem>
+                  <MenuItem value="alta competencia">Alta Competencia</MenuItem>
+                  <MenuItem value="alto rendimiento">Alto Rendimiento</MenuItem>
+                </Select>
+                {errors.experiencia && <FormHelperText>{errors.experiencia}</FormHelperText>}
+              </FormControl>
+            </Grid>
+
+            {/* Estilo */}
+            <Grid item xs={12} sm={6}>
+              <FormControl fullWidth error={!!errors.estilo}>
+                <InputLabel>Estilo</InputLabel>
+                <Select
+                  value={userData.estilo}
+                  onChange={handleUserDataChange('estilo')}
+                  label="Estilo"
+                >
+                  <MenuItem value="explosivo (velocidad)">Explosivo (velocidad)</MenuItem>
+                  <MenuItem value="fondo">Fondo</MenuItem>
+                  <MenuItem value="mixto">Mixto</MenuItem>
+                  <MenuItem value="tecnico">Técnico</MenuItem>
+                  <MenuItem value="free style">Free Style</MenuItem>
+                </Select>
+                {errors.estilo && <FormHelperText>{errors.estilo}</FormHelperText>}
+              </FormControl>
+            </Grid>
+
+            {/* Suelo */}
+            <Grid item xs={12} sm={6}>
+              <FormControl fullWidth error={!!errors.suelo}>
+                <InputLabel>Tipo de Suelo</InputLabel>
+                <Select
+                  value={userData.suelo}
+                  onChange={handleUserDataChange('suelo')}
+                  label="Tipo de Suelo"
+                >
+                  <MenuItem value="pista">Pista</MenuItem>
+                  <MenuItem value="asfalto liso">Asfalto Liso</MenuItem>
+                  <MenuItem value="asfalto rugoso">Asfalto Rugoso</MenuItem>
+                  <MenuItem value="indoor">Indoor</MenuItem>
+                  <MenuItem value="calle">Calle</MenuItem>
+                </Select>
+                {errors.suelo && <FormHelperText>{errors.suelo}</FormHelperText>}
+              </FormControl>
+            </Grid>
+
+            {/* Temperatura */}
+            <Grid item xs={12} sm={6}>
+              <FormControl fullWidth>
+                <InputLabel>Temperatura</InputLabel>
+                <Select
+                  value={userData.temperatura}
+                  onChange={handleUserDataChange('temperatura')}
+                  label="Temperatura"
+                >
+                  <MenuItem value="sin especificar">Sin especificar</MenuItem>
+                  <MenuItem value="frio">Frío</MenuItem>
+                  <MenuItem value="templado">Templado</MenuItem>
+                  <MenuItem value="caluroso">Caluroso</MenuItem>
+                </Select>
+              </FormControl>
+            </Grid>
+
+            {/* Priority */}
+            <Grid item xs={12}>
+              <FormControl component="fieldset" error={!!errors.priority}>
+                <Typography variant="subtitle2" gutterBottom>
+                  ¿Qué priorizas?
+                </Typography>
+                <RadioGroup
+                  row
+                  value={userData.priority}
+                  onChange={handleUserDataChange('priority')}
+                >
+                  <FormControlLabel value="Más agarre" control={<Radio />} label="Más agarre" />
+                  <FormControlLabel value="Más velocidad" control={<Radio />} label="Más velocidad" />
+                  <FormControlLabel 
+                    value="Balance entre agarre y velocidad" 
+                    control={<Radio />} 
+                    label="Balance" 
+                  />
+                </RadioGroup>
+                {errors.priority && <FormHelperText>{errors.priority}</FormHelperText>}
+              </FormControl>
+            </Grid>
+          </Grid>
+        </Box>
+
+        <Divider sx={{ my: 3 }} />
+
+        {/* Sección: Ruedas Disponibles */}
         <Box sx={{ mb: 3 }}>
+          <Typography variant="h6" gutterBottom sx={{ mb: 2, color: 'primary.main' }}>
+            Ruedas Disponibles
+          </Typography>
           <Typography variant="body2" color="text.secondary" gutterBottom>
             Ingresa las ruedas que tienes disponibles. Debes tener exactamente 8 ruedas en total.
           </Typography>
@@ -201,4 +384,3 @@ function WheelPositionForm({ onSubmit }) {
 }
 
 export default WheelPositionForm;
-

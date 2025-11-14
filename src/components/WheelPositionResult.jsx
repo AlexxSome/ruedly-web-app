@@ -26,7 +26,7 @@ function WheelPositionResult({ result }) {
     );
   }
 
-  const { rightFoot, leftFoot, strategy } = result;
+  const { rightFoot, leftFoot, strategy, userContext } = result;
 
   return (
     <Paper elevation={3} sx={{ p: 3, height: '100%' }}>
@@ -37,9 +37,14 @@ function WheelPositionResult({ result }) {
 
       {strategy && (
         <Alert severity="info" sx={{ mb: 3 }}>
-          <Typography variant="body2">
+          <Typography variant="body2" gutterBottom>
             <strong>Estrategia:</strong> {strategy}
           </Typography>
+          {userContext && (
+            <Typography variant="caption" display="block" sx={{ mt: 1, opacity: 0.8 }}>
+              Basado en: {userContext.disciplina} • {userContext.priority} • {userContext.estilo}
+            </Typography>
+          )}
         </Alert>
       )}
 

@@ -54,8 +54,8 @@ function App() {
     setResult(recommendation);
   };
 
-  const handlePositionSubmit = (wheelsData) => {
-    const position = calculateWheelPosition(wheelsData);
+  const handlePositionSubmit = (data) => {
+    const position = calculateWheelPosition(data);
     setPositionResult(position);
   };
 
