@@ -16,14 +16,8 @@ import {
   Settings
 } from '@mui/icons-material';
 
-// Importar imagen - si no existe, el build fallará y podrás agregarla
-// Coloca tu imagen en: src/assets/wheel-position.png
-let wheelPositionImage;
-try {
-  wheelPositionImage = new URL('../assets/wheel-position.png', import.meta.url).href;
-} catch {
-  wheelPositionImage = null;
-}
+// Importar imagen SVG
+import patinPosicionesImage from '../assets/patin-posiciones.svg';
 
 function WheelRecommendationResult({ result }) {
   if (!result || !result.recommendation) {
@@ -68,7 +62,7 @@ function WheelRecommendationResult({ result }) {
               <Typography variant="caption" display="block">
                 Perfil
               </Typography>
-              <Typography variant="h4" fontWeight="bold">
+              <Typography variant="h6" fontWeight="bold">
                 {profile}
               </Typography>
             </Grid>
@@ -76,7 +70,7 @@ function WheelRecommendationResult({ result }) {
               <Typography variant="caption" display="block">
                 Tamaño
               </Typography>
-              <Typography variant="h4" fontWeight="bold">
+              <Typography variant="h6" fontWeight="bold">
                 {wheelSize}mm
               </Typography>
             </Grid>
@@ -113,21 +107,17 @@ function WheelRecommendationResult({ result }) {
             </Box>
           )}
           {/* Imagen de posicionamiento */}
-          {wheelPositionImage && (
-            <Box sx={{ mt: 3, display: 'flex', justifyContent: 'center' }}>
-              <Box
-                component="img"
-                src={wheelPositionImage}
-                alt="Posicionamiento de ruedas"
-                sx={{
-                  maxWidth: '100%',
-                  height: 'auto',
-                  borderRadius: 2,
-                  boxShadow: 2
-                }}
-              />
-            </Box>
-          )}
+          <Box sx={{ mt: 3, display: 'flex', justifyContent: 'center' }}>
+            <Box
+              component="img"
+              src={patinPosicionesImage}
+              alt="Posicionamiento de ruedas"
+              sx={{
+                maxWidth: '50%',
+                height: 'auto'
+              }}
+            />
+          </Box>
         </Box>
       )}
 
@@ -147,21 +137,17 @@ function WheelRecommendationResult({ result }) {
             </Typography>
           </Alert>
           {/* Imagen de posicionamiento */}
-          {wheelPositionImage && (
-            <Box sx={{ mt: 3, display: 'flex', justifyContent: 'center' }}>
-              <Box
-                component="img"
-                src={wheelPositionImage}
-                alt="Posicionamiento de ruedas"
-                sx={{
-                  maxWidth: '100%',
-                  height: 'auto',
-                  borderRadius: 2,
-                  boxShadow: 2
-                }}
-              />
-            </Box>
-          )}
+          <Box sx={{ mt: 3, display: 'flex', justifyContent: 'center' }}>
+            <Box
+              component="img"
+              src={patinPosicionesImage}
+              alt="Posicionamiento de ruedas"
+              sx={{
+                maxWidth: '50%',
+                height: 'auto'
+              }}
+            />
+          </Box>
         </Box>
       )}
 
