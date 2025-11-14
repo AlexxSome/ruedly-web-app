@@ -9,7 +9,6 @@ import {
   Card,
   CardContent
 } from '@mui/material';
-import wheelPositionImage from '../assets/wheel-position.png';
 import {
   CheckCircle,
   Info,
@@ -104,20 +103,6 @@ function WheelRecommendationResult({ result }) {
               </Typography>
             </Box>
           )}
-          {/* Imagen de posicionamiento */}
-          <Box sx={{ mt: 3, display: 'flex', justifyContent: 'center' }}>
-            <Box
-              component="img"
-              src={wheelPositionImage}
-              alt="Posicionamiento de ruedas"
-              sx={{
-                maxWidth: '100%',
-                height: 'auto',
-                borderRadius: 2,
-                boxShadow: 2
-              }}
-            />
-          </Box>
         </Box>
       )}
 
@@ -136,20 +121,6 @@ function WheelRecommendationResult({ result }) {
               Esta configuración uniforme es más fácil de mantener y rotar.
             </Typography>
           </Alert>
-          {/* Imagen de posicionamiento */}
-          <Box sx={{ mt: 3, display: 'flex', justifyContent: 'center' }}>
-            <Box
-              component="img"
-              src={wheelPositionImage}
-              alt="Posicionamiento de ruedas"
-              sx={{
-                maxWidth: '100%',
-                height: 'auto',
-                borderRadius: 2,
-                boxShadow: 2
-              }}
-            />
-          </Box>
         </Box>
       )}
 
