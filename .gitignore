@@ -1,0 +1,19 @@
+# Dependencias
+node_modules/
+.idea/
+.vscode/
+.DS_Store
+
+# Builds
+dist/
+build/
+out/
+tmp/
+temp/
+
+# Logs
+logs/
+*.log
+
+# OS
+Thumbs.db
