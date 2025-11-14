@@ -50,6 +50,7 @@ function App() {
   const [positionResult, setPositionResult] = useState(null);
   const [tabValue, setTabValue] = useState(0);
   const [openModal, setOpenModal] = useState(false);
+  const [openPositionModal, setOpenPositionModal] = useState(false);
 
   const handleFormSubmit = (formData) => {
     const recommendation = getWheelRecommendation(formData);
@@ -64,6 +65,11 @@ function App() {
   const handlePositionSubmit = (data) => {
     const position = calculateWheelPosition(data);
     setPositionResult(position);
+    setOpenPositionModal(true);
+  };
+
+  const handleClosePositionModal = () => {
+    setOpenPositionModal(false);
   };
 
   const handleTabChange = (event, newValue) => {
@@ -132,6 +138,39 @@ function App() {
                 <Close />
               </IconButton>
               <WheelRecommendationResult result={result} />
+            </DialogContent>
+          </Dialog>
+
+          {/* Modal para mostrar el resultado de posicionamiento */}
+          <Dialog
+            open={openPositionModal}
+            onClose={handleClosePositionModal}
+            maxWidth="md"
+            fullWidth
+            PaperProps={{
+              sx: {
+                borderRadius: 2
+              }
+            }}
+          >
+            <DialogContent sx={{ p: 0, position: 'relative' }}>
+              <IconButton
+                aria-label="close"
+                onClick={handleClosePositionModal}
+                sx={{
+                  position: 'absolute',
+                  right: 8,
+                  top: 8,
+                  zIndex: 1,
+                  bgcolor: 'background.paper',
+                  '&:hover': {
+                    bgcolor: 'action.hover'
+                  }
+                }}
+              >
+                <Close />
+              </IconButton>
+              <WheelPositionResult result={positionResult} />
             </DialogContent>
           </Dialog>
         </Container>

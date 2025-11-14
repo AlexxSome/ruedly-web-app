@@ -9,13 +9,21 @@ import {
   Card,
   CardContent
 } from '@mui/material';
-import wheelPositionImage from '../assets/wheel-position.png';
 import {
   CheckCircle,
   Info,
   Speed,
   Settings
 } from '@mui/icons-material';
+
+// Importar imagen - si no existe, el build fallará y podrás agregarla
+// Coloca tu imagen en: src/assets/wheel-position.png
+let wheelPositionImage;
+try {
+  wheelPositionImage = new URL('../assets/wheel-position.png', import.meta.url).href;
+} catch {
+  wheelPositionImage = null;
+}
 
 function WheelRecommendationResult({ result }) {
   if (!result || !result.recommendation) {
@@ -48,7 +56,7 @@ function WheelRecommendationResult({ result }) {
       <Card sx={{ mb: 3, bgcolor: 'primary.light', color: 'primary.contrastText' }}>
         <CardContent>
           <Grid container spacing={2}>
-            <Grid item xs={6}>
+            <Grid item xs={12} sm={4}>
               <Typography variant="caption" display="block">
                 Dureza
               </Typography>
@@ -56,19 +64,19 @@ function WheelRecommendationResult({ result }) {
                 {hardness}
               </Typography>
             </Grid>
-            <Grid item xs={6}>
+            <Grid item xs={12} sm={4}>
               <Typography variant="caption" display="block">
                 Perfil
               </Typography>
-              <Typography variant="h6" fontWeight="bold">
+              <Typography variant="h4" fontWeight="bold">
                 {profile}
               </Typography>
             </Grid>
-            <Grid item xs={12}>
-              <Typography variant="caption" display="block" sx={{ mt: 1 }}>
+            <Grid item xs={12} sm={4}>
+              <Typography variant="caption" display="block">
                 Tamaño
               </Typography>
-              <Typography variant="h6" fontWeight="bold">
+              <Typography variant="h4" fontWeight="bold">
                 {wheelSize}mm
               </Typography>
             </Grid>
@@ -105,19 +113,21 @@ function WheelRecommendationResult({ result }) {
             </Box>
           )}
           {/* Imagen de posicionamiento */}
-          <Box sx={{ mt: 3, display: 'flex', justifyContent: 'center' }}>
-            <Box
-              component="img"
-              src={wheelPositionImage}
-              alt="Posicionamiento de ruedas"
-              sx={{
-                maxWidth: '100%',
-                height: 'auto',
-                borderRadius: 2,
-                boxShadow: 2
-              }}
-            />
-          </Box>
+          {wheelPositionImage && (
+            <Box sx={{ mt: 3, display: 'flex', justifyContent: 'center' }}>
+              <Box
+                component="img"
+                src={wheelPositionImage}
+                alt="Posicionamiento de ruedas"
+                sx={{
+                  maxWidth: '100%',
+                  height: 'auto',
+                  borderRadius: 2,
+                  boxShadow: 2
+                }}
+              />
+            </Box>
+          )}
         </Box>
       )}
 
@@ -137,19 +147,21 @@ function WheelRecommendationResult({ result }) {
             </Typography>
           </Alert>
           {/* Imagen de posicionamiento */}
-          <Box sx={{ mt: 3, display: 'flex', justifyContent: 'center' }}>
-            <Box
-              component="img"
-              src={wheelPositionImage}
-              alt="Posicionamiento de ruedas"
-              sx={{
-                maxWidth: '100%',
-                height: 'auto',
-                borderRadius: 2,
-                boxShadow: 2
-              }}
-            />
-          </Box>
+          {wheelPositionImage && (
+            <Box sx={{ mt: 3, display: 'flex', justifyContent: 'center' }}>
+              <Box
+                component="img"
+                src={wheelPositionImage}
+                alt="Posicionamiento de ruedas"
+                sx={{
+                  maxWidth: '100%',
+                  height: 'auto',
+                  borderRadius: 2,
+                  boxShadow: 2
+                }}
+              />
+            </Box>
+          )}
         </Box>
       )}
 

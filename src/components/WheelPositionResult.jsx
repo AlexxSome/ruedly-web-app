@@ -1,6 +1,5 @@
 import React from 'react';
 import {
-  Paper,
   Typography,
   Box,
   Grid,
@@ -18,18 +17,18 @@ import {
 function WheelPositionResult({ result }) {
   if (!result || result.error) {
     return (
-      <Paper elevation={3} sx={{ p: 3, textAlign: 'center' }}>
+      <Box sx={{ p: 3, textAlign: 'center' }}>
         <Typography variant="h6" color="text.secondary">
           {result?.error || 'Completa el formulario y calcula el posicionamiento'}
         </Typography>
-      </Paper>
+      </Box>
     );
   }
 
   const { rightFoot, leftFoot, strategy, userContext } = result;
 
   return (
-    <Paper elevation={3} sx={{ p: 3, height: '100%' }}>
+    <Box sx={{ p: 3 }}>
       <Typography variant="h5" gutterBottom sx={{ mb: 3, fontWeight: 'bold', display: 'flex', alignItems: 'center', gap: 1 }}>
         <CheckCircle sx={{ color: 'success.main' }} />
         Posicionamiento Recomendado
@@ -149,7 +148,7 @@ function WheelPositionResult({ result }) {
           </Grid>
         </Grid>
       </Box>
-    </Paper>
+    </Box>
   );
 }
 
