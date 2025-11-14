@@ -40,7 +40,7 @@ function WheelRecommendationResult({ result }) {
 
       {isFallback && (
         <Alert severity="info" sx={{ mb: 3 }}>
-          Esta es una recomendación general. Para una recomendación más precisa, completa todos los campos del formulario.
+          Esta es una recomendación general.
         </Alert>
       )}
 

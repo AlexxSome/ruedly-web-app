@@ -110,7 +110,7 @@ function getDefaultRecommendation(form) {
   return {
     hardness,
     profile,
-    notes: "Recomendación general basada en tus preferencias. Para una recomendación más precisa, completa todos los campos del formulario.",
+    notes: "Recomendación general basada en tus preferencias.",
     mixedConfig: null,
     isFallback: true
   };
