@@ -16,6 +16,15 @@ import {
   Settings
 } from '@mui/icons-material';
 
+// Importar imagen - si no existe, el build fallará y podrás agregarla
+// Coloca tu imagen en: src/assets/wheel-position.png
+let wheelPositionImage;
+try {
+  wheelPositionImage = new URL('../assets/wheel-position.png', import.meta.url).href;
+} catch {
+  wheelPositionImage = null;
+}
+
 function WheelRecommendationResult({ result }) {
   if (!result || !result.recommendation) {
     return (
@@ -39,7 +48,7 @@ function WheelRecommendationResult({ result }) {
 
       {isFallback && (
         <Alert severity="info" sx={{ mb: 3 }}>
-          Esta es una recomendación general.
+          Esta es una recomendación general. Para una recomendación más precisa, completa todos los campos del formulario.
         </Alert>
       )}
 
@@ -47,7 +56,7 @@ function WheelRecommendationResult({ result }) {
       <Card sx={{ mb: 3, bgcolor: 'primary.light', color: 'primary.contrastText' }}>
         <CardContent>
           <Grid container spacing={2}>
-            <Grid item xs={6}>
+            <Grid item xs={12} sm={4}>
               <Typography variant="caption" display="block">
                 Dureza
               </Typography>
@@ -55,19 +64,19 @@ function WheelRecommendationResult({ result }) {
                 {hardness}
               </Typography>
             </Grid>
-            <Grid item xs={6}>
+            <Grid item xs={12} sm={4}>
               <Typography variant="caption" display="block">
                 Perfil
               </Typography>
-              <Typography variant="h6" fontWeight="bold">
+              <Typography variant="h4" fontWeight="bold">
                 {profile}
               </Typography>
             </Grid>
-            <Grid item xs={12}>
-              <Typography variant="caption" display="block" sx={{ mt: 1 }}>
+            <Grid item xs={12} sm={4}>
+              <Typography variant="caption" display="block">
                 Tamaño
               </Typography>
-              <Typography variant="h6" fontWeight="bold">
+              <Typography variant="h4" fontWeight="bold">
                 {wheelSize}mm
               </Typography>
             </Grid>
@@ -103,6 +112,22 @@ function WheelRecommendationResult({ result }) {
               </Typography>
             </Box>
           )}
+          {/* Imagen de posicionamiento */}
+          {wheelPositionImage && (
+            <Box sx={{ mt: 3, display: 'flex', justifyContent: 'center' }}>
+              <Box
+                component="img"
+                src={wheelPositionImage}
+                alt="Posicionamiento de ruedas"
+                sx={{
+                  maxWidth: '100%',
+                  height: 'auto',
+                  borderRadius: 2,
+                  boxShadow: 2
+                }}
+              />
+            </Box>
+          )}
         </Box>
       )}
 
@@ -121,6 +146,22 @@ function WheelRecommendationResult({ result }) {
               Esta configuración uniforme es más fácil de mantener y rotar.
             </Typography>
           </Alert>
+          {/* Imagen de posicionamiento */}
+          {wheelPositionImage && (
+            <Box sx={{ mt: 3, display: 'flex', justifyContent: 'center' }}>
+              <Box
+                component="img"
+                src={wheelPositionImage}
+                alt="Posicionamiento de ruedas"
+                sx={{
+                  maxWidth: '100%',
+                  height: 'auto',
+                  borderRadius: 2,
+                  boxShadow: 2
+                }}
+              />
+            </Box>
+          )}
         </Box>
       )}
 
