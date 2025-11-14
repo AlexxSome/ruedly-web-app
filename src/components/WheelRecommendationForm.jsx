@@ -16,9 +16,13 @@ import {
   FormHelperText,
   Card,
   CardContent,
-  CardActionArea
+  CardActionArea,
+  Accordion,
+  AccordionSummary,
+  AccordionDetails,
+  Alert
 } from '@mui/material';
-import { Calculate, Speed } from '@mui/icons-material';
+import { Calculate, Speed, ExpandMore, Info } from '@mui/icons-material';
 
 const SET_CONFIG_OPTIONS = [
   {
@@ -67,6 +71,7 @@ function WheelRecommendationForm({ onSubmit }) {
   });
 
   const [errors, setErrors] = useState({});
+  const [expandedAccordion, setExpandedAccordion] = useState(null);
 
   const handleChange = (field) => (event) => {
     const value = event.target.value;
@@ -113,35 +118,140 @@ function WheelRecommendationForm({ onSubmit }) {
         <Grid container spacing={3}>
           {/* Set Config Mode - Destacado */}
           <Grid item xs={12}>
-            <Typography variant="h6" gutterBottom sx={{ mb: 2, color: 'primary.main' }}>
-              Tipo de Configuración del Set
-            </Typography>
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 1 }}>
+              <Info sx={{ color: 'primary.main' }} />
+              <Typography variant="h6" sx={{ color: 'primary.main' }}>
+                Tipo de Configuración del Set
+              </Typography>
+            </Box>
+            <Alert severity="info" sx={{ mb: 2 }}>
+              <Typography variant="body2">
+                <strong>Selecciona una opción:</strong> Elige el tipo de configuración que prefieres para tu set de ruedas. 
+                Haz clic en una tarjeta para seleccionarla y expande para más información.
+              </Typography>
+            </Alert>
             <Grid container spacing={2}>
               {SET_CONFIG_OPTIONS.map((option) => (
-                <Grid item xs={12} sm={6} key={option.value}>
+                <Grid item xs={12} key={option.value}>
                   <Card 
                     sx={{ 
                       border: formData.setConfigMode === option.value ? 2 : 1,
                       borderColor: formData.setConfigMode === option.value ? 'primary.main' : 'divider',
-                      height: '100%'
+                      height: '100%',
+                      transition: 'all 0.2s ease-in-out',
+                      '&:hover': {
+                        boxShadow: 3,
+                        transform: 'translateY(-2px)'
+                      }
                     }}
                   >
-                    <CardActionArea onClick={() => handleChange('setConfigMode')({ target: { value: option.value } })}>
-                      <CardContent>
-                        <Typography variant="subtitle1" fontWeight="bold" gutterBottom>
-                          {option.title}
-                        </Typography>
-                        <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>
-                          {option.description}
-                        </Typography>
-                        <Box sx={{ mt: 1 }}>
-                          <Typography variant="caption" color="success.main" fontWeight="bold">
-                            Ventajas:
+                    <CardActionArea 
+                      onClick={() => {
+                        handleChange('setConfigMode')({ target: { value: option.value } });
+                        // Si la caja no está seleccionada, seleccionarla y expandir
+                        // Si ya está seleccionada, solo alternar la expansión
+                        if (formData.setConfigMode !== option.value) {
+                          setExpandedAccordion(option.value);
+                        } else {
+                          setExpandedAccordion(expandedAccordion === option.value ? null : option.value);
+                        }
+                      }}
+                      sx={{ p: 0 }}
+                    >
+                      <CardContent sx={{ pb: '16px !important' }}>
+                        <Box 
+                          sx={{ 
+                            display: 'flex', 
+                            alignItems: 'center', 
+                            justifyContent: 'space-between', 
+                            mb: 1
+                          }}
+                        >
+                          <Typography 
+                            variant="subtitle1" 
+                            fontWeight="bold"
+                            sx={{ cursor: 'pointer', flex: 1 }}
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleChange('setConfigMode')({ target: { value: option.value } });
+                              if (formData.setConfigMode !== option.value) {
+                                setExpandedAccordion(option.value);
+                              } else {
+                                setExpandedAccordion(expandedAccordion === option.value ? null : option.value);
+                              }
+                            }}
+                          >
+                            {option.title}
                           </Typography>
-                          <Typography variant="caption" display="block" color="text.secondary">
-                            {option.advantages.join(', ')}
-                          </Typography>
+                          <Box
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              setExpandedAccordion(expandedAccordion === option.value ? null : option.value);
+                            }}
+                            sx={{ 
+                              cursor: 'pointer',
+                              display: 'flex',
+                              alignItems: 'center'
+                            }}
+                          >
+                            <ExpandMore 
+                              sx={{ 
+                                color: 'primary.main',
+                                transform: expandedAccordion === option.value ? 'rotate(180deg)' : 'rotate(0deg)',
+                                transition: 'transform 0.2s ease-in-out'
+                              }} 
+                            />
+                          </Box>
                         </Box>
+                        
+                        {/* Descripción colapsable */}
+                        <Accordion 
+                          expanded={expandedAccordion === option.value}
+                          onChange={(e, isExpanded) => {
+                            e.stopPropagation();
+                            setExpandedAccordion(isExpanded ? option.value : null);
+                          }}
+                          sx={{ 
+                            boxShadow: 'none',
+                            '&:before': { display: 'none' },
+                            m: 0,
+                            mt: 1
+                          }}
+                          onClick={(e) => e.stopPropagation()}
+                        >
+                          <AccordionSummary
+                            expandIcon={null}
+                            sx={{ 
+                              minHeight: 0,
+                              py: 0,
+                              display: 'none'
+                            }}
+                          >
+                          </AccordionSummary>
+                          <AccordionDetails sx={{ pt: 0, pb: 1 }}>
+                            <Typography variant="body2" color="text.secondary" sx={{ mb: 1.5 }}>
+                              {option.description}
+                            </Typography>
+                            
+                            <Box sx={{ mb: 1 }}>
+                              <Typography variant="caption" color="success.main" fontWeight="bold" display="block">
+                                Ventajas:
+                              </Typography>
+                              <Typography variant="caption" display="block" color="text.secondary" sx={{ mt: 0.5 }}>
+                                {option.advantages.join(' • ')}
+                              </Typography>
+                            </Box>
+                            
+                            <Box>
+                              <Typography variant="caption" color="error.main" fontWeight="bold" display="block">
+                                Desventajas:
+                              </Typography>
+                              <Typography variant="caption" display="block" color="text.secondary" sx={{ mt: 0.5 }}>
+                                {option.disadvantages.join(' • ')}
+                              </Typography>
+                            </Box>
+                          </AccordionDetails>
+                        </Accordion>
                       </CardContent>
                     </CardActionArea>
                   </Card>
@@ -179,7 +289,7 @@ function WheelRecommendationForm({ onSubmit }) {
             <TextField
               fullWidth
               type="number"
-              label="Peso (kg)"
+              label="Tu peso (kg)"
               value={formData.pesoKg}
               onChange={handleChange('pesoKg')}
               placeholder="Ej: 70"
@@ -251,7 +361,7 @@ function WheelRecommendationForm({ onSubmit }) {
                 <MenuItem value="pista">Pista</MenuItem>
                 <MenuItem value="asfalto liso">Asfalto Liso</MenuItem>
                 <MenuItem value="asfalto rugoso">Asfalto Rugoso</MenuItem>
-                <MenuItem value="indoor">Indoor</MenuItem>
+                <MenuItem value="indoor">Indoor / Cemento liso</MenuItem>
                 <MenuItem value="calle">Calle</MenuItem>
               </Select>
               {errors.suelo && <FormHelperText>{errors.suelo}</FormHelperText>}
@@ -302,7 +412,7 @@ function WheelRecommendationForm({ onSubmit }) {
           <Grid item xs={12}>
             <FormControl component="fieldset" error={!!errors.modoDureza}>
               <Typography variant="subtitle2" gutterBottom>
-                Tipo de Dureza
+              Elige cómo estará escrita la dureza en tus ruedas
               </Typography>
               <RadioGroup
                 row
