@@ -11,7 +11,7 @@ function Header() {
           <Typography variant="h4" component="h1" sx={{ fontWeight: 'bold', lineHeight: 1.2 }}>
             Ruedly
           </Typography>
-          <Typography variant="subtitle2" sx={{ opacity: 0.9, fontSize: '0.85rem' }}>
+          <Typography variant="subtitle2" sx={{ opacity: 0.9, fontSize: '0.85rem', mb: 2 }}>
             Tu guía para elegir las ruedas perfectas
           </Typography>
         </Box>

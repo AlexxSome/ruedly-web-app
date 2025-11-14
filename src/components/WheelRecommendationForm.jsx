@@ -27,7 +27,7 @@ import { Calculate, Speed, ExpandMore, Info } from '@mui/icons-material';
 const SET_CONFIG_OPTIONS = [
   {
     value: "Automática según la regla",
-    title: "Automática según la regla",
+    title: "Automática",
     description: "Usa la configuración pensada para ese escenario (por ejemplo mixedConfig con posiciones 1–4). No requiere conocimientos técnicos, es el modo más 'inteligente'.",
     advantages: ["Configuración optimizada para tu escenario", "No requiere conocimientos técnicos"],
     disadvantages: ["Menos control manual", "Puede sugerir configuraciones mixtas más complejas"]
