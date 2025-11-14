@@ -109,9 +109,13 @@ function WheelRecommendationForm({ onSubmit }) {
 
   return (
     <Paper elevation={3} sx={{ p: 3 }}>
-      <Typography variant="h5" gutterBottom sx={{ mb: 3, fontWeight: 'bold', display: 'flex', alignItems: 'center', gap: 1 }}>
+      <Typography variant="h5" gutterBottom sx={{ mb: 2, fontWeight: 'bold', display: 'flex', alignItems: 'center', gap: 1 }}>
         <Speed sx={{ color: 'primary.main' }} />
-        Configuración de Ruedas
+        Recomendación de Ruedas
+      </Typography>
+      
+      <Typography variant="body2" color="text.secondary" sx={{ mb: 3, lineHeight: 1.6 }}>
+        Completa el formulario para recibir una recomendación de ruedas (tamaño, dureza y posición) que mejoren tu patinar, ya sea para entrenar, pasear o competir.
       </Typography>
 
       <form onSubmit={handleSubmit}>
@@ -119,15 +123,12 @@ function WheelRecommendationForm({ onSubmit }) {
           {/* Set Config Mode - Destacado */}
           <Grid item xs={12}>
             <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 1 }}>
-              <Info sx={{ color: 'primary.main' }} />
-              <Typography variant="h6" sx={{ color: 'primary.main' }}>
-                Tipo de Configuración del Set
-              </Typography>
+ 
+
             </Box>
             <Alert severity="info" sx={{ mb: 2 }}>
               <Typography variant="body2">
-                <strong>Selecciona una opción:</strong> Elige el tipo de configuración que prefieres para tu set de ruedas. 
-                Haz clic en una tarjeta para seleccionarla y expande para más información.
+                <strong>Selecciona una opción:</strong> Elige el tipo de configuración que prefieres para tu set de ruedas.               
               </Typography>
             </Alert>
             <Grid container spacing={2}>
