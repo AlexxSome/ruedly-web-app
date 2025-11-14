@@ -150,6 +150,9 @@ function WheelPositionForm({ onSubmit }) {
         Posicionamiento de Ruedas
       </Typography>
 
+      <Typography variant="body2" color="text.secondary" sx={{ mb: 3, lineHeight: 1.6 }}>
+      Indica las ruedas que ya tienes y te ayudamos a ordenarlas en cada posición del patín para lograr mejor agarre, control y fluidez al patinar.
+      </Typography>
       <form onSubmit={handleSubmit}>
         {/* Sección: Datos del Usuario */}
         <Box sx={{ mb: 4 }}>

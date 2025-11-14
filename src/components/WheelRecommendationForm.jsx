@@ -126,18 +126,25 @@ function WheelRecommendationForm({ onSubmit }) {
  
 
             </Box>
-            <Alert severity="info" sx={{ mb: 2 }}>
-              <Typography variant="body2">
-                <strong>Selecciona una opción:</strong> Elige el tipo de configuración que prefieres para tu set de ruedas.               
-              </Typography>
-            </Alert>
+              <Alert 
+                severity={errors.setConfigMode ? "error" : "info"} 
+                sx={{ mb: 2 }}
+              >
+                <Typography variant="body2">
+                  <strong>Selecciona una opción:</strong> Elige el tipo de configuración que prefieres para tu set de ruedas.               
+                </Typography>
+              </Alert>
             <Grid container spacing={2}>
               {SET_CONFIG_OPTIONS.map((option) => (
                 <Grid item xs={12} key={option.value}>
                   <Card 
                     sx={{ 
-                      border: formData.setConfigMode === option.value ? 2 : 1,
-                      borderColor: formData.setConfigMode === option.value ? 'primary.main' : 'divider',
+                      border: formData.setConfigMode === option.value ? 2 : errors.setConfigMode ? 2 : 1,
+                      borderColor: formData.setConfigMode === option.value 
+                        ? 'primary.main' 
+                        : errors.setConfigMode 
+                        ? 'error.main' 
+                        : 'divider',
                       height: '100%',
                       transition: 'all 0.2s ease-in-out',
                       '&:hover': {
