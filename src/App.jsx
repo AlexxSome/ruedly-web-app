@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import { ThemeProvider, createTheme, CssBaseline, Container, Grid, Box, Tabs, Tab, Typography } from '@mui/material';
+import { ThemeProvider, createTheme, CssBaseline, Container, Grid, Box, Tabs, Tab, Typography, Dialog, DialogContent, IconButton } from '@mui/material';
+import { Close } from '@mui/icons-material';
 import Header from './components/Header';
 import WheelRecommendationForm from './components/WheelRecommendationForm';
 import WheelRecommendationResult from './components/WheelRecommendationResult';
@@ -12,9 +13,9 @@ import { calculateWheelPosition } from './utils/calculateWheelPosition';
 const theme = createTheme({
   palette: {
     primary: {
-      main: '#2E7D32', // Verde
-      light: '#4CAF50',
-      dark: '#1B5E20',
+      main: '#5d9b86', // Verde azulado
+      light: '#7fb8a8',
+      dark: '#4a8573',
       contrastText: '#fff',
     },
     secondary: {
@@ -48,10 +49,16 @@ function App() {
   const [result, setResult] = useState(null);
   const [positionResult, setPositionResult] = useState(null);
   const [tabValue, setTabValue] = useState(0);
+  const [openModal, setOpenModal] = useState(false);
 
   const handleFormSubmit = (formData) => {
     const recommendation = getWheelRecommendation(formData);
     setResult(recommendation);
+    setOpenModal(true);
+  };
+
+  const handleCloseModal = () => {
+    setOpenModal(false);
   };
 
   const handlePositionSubmit = (data) => {
@@ -80,32 +87,53 @@ function App() {
 
           {/* Contenido principal */}
           {tabValue === 0 && (
-            <Grid container spacing={4}>
-              {/* Columna izquierda: Formulario */}
-              <Grid item xs={12} md={6}>
+            <Box sx={{ display: 'flex', justifyContent: 'center' }}>
+              <Box sx={{ width: '100%', maxWidth: '1200px' }}>
                 <WheelRecommendationForm onSubmit={handleFormSubmit} />
-              </Grid>
-
-              {/* Columna derecha: Resultados */}
-              <Grid item xs={12} md={6}>
-                <WheelRecommendationResult result={result} />
-              </Grid>
-            </Grid>
+              </Box>
+            </Box>
           )}
 
           {tabValue === 1 && (
-            <Grid container spacing={4}>
-              {/* Columna izquierda: Formulario */}
-              <Grid item xs={12} md={6}>
+            <Box sx={{ display: 'flex', justifyContent: 'center' }}>
+              <Box sx={{ width: '100%', maxWidth: '1200px' }}>
                 <WheelPositionForm onSubmit={handlePositionSubmit} />
-              </Grid>
-
-              {/* Columna derecha: Resultados */}
-              <Grid item xs={12} md={6}>
-                <WheelPositionResult result={positionResult} />
-              </Grid>
-            </Grid>
+              </Box>
+            </Box>
           )}
+
+          {/* Modal para mostrar el resultado de recomendación */}
+          <Dialog
+            open={openModal}
+            onClose={handleCloseModal}
+            maxWidth="md"
+            fullWidth
+            PaperProps={{
+              sx: {
+                borderRadius: 2
+              }
+            }}
+          >
+            <DialogContent sx={{ p: 0, position: 'relative' }}>
+              <IconButton
+                aria-label="close"
+                onClick={handleCloseModal}
+                sx={{
+                  position: 'absolute',
+                  right: 8,
+                  top: 8,
+                  zIndex: 1,
+                  bgcolor: 'background.paper',
+                  '&:hover': {
+                    bgcolor: 'action.hover'
+                  }
+                }}
+              >
+                <Close />
+              </IconButton>
+              <WheelRecommendationResult result={result} />
+            </DialogContent>
+          </Dialog>
         </Container>
       </Box>
     </ThemeProvider>

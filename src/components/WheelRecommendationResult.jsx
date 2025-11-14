@@ -1,6 +1,5 @@
 import React from 'react';
 import {
-  Paper,
   Typography,
   Box,
   Chip,
@@ -10,6 +9,7 @@ import {
   Card,
   CardContent
 } from '@mui/material';
+import wheelPositionImage from '../assets/wheel-position.png';
 import {
   CheckCircle,
   Info,
@@ -20,11 +20,11 @@ import {
 function WheelRecommendationResult({ result }) {
   if (!result || !result.recommendation) {
     return (
-      <Paper elevation={3} sx={{ p: 3, textAlign: 'center' }}>
+      <Box sx={{ p: 3, textAlign: 'center' }}>
         <Typography variant="h6" color="text.secondary">
           Completa el formulario y calcula tu recomendación
         </Typography>
-      </Paper>
+      </Box>
     );
   }
 
@@ -32,7 +32,7 @@ function WheelRecommendationResult({ result }) {
   const { hardness, profile, notes, mixedConfig, wheelSize } = recommendation;
 
   return (
-    <Paper elevation={3} sx={{ p: 3, height: '100%' }}>
+    <Box sx={{ p: 3 }}>
       <Typography variant="h5" gutterBottom sx={{ mb: 3, fontWeight: 'bold', display: 'flex', alignItems: 'center', gap: 1 }}>
         <CheckCircle sx={{ color: 'success.main' }} />
         Tu Recomendación
@@ -104,6 +104,20 @@ function WheelRecommendationResult({ result }) {
               </Typography>
             </Box>
           )}
+          {/* Imagen de posicionamiento */}
+          <Box sx={{ mt: 3, display: 'flex', justifyContent: 'center' }}>
+            <Box
+              component="img"
+              src={wheelPositionImage}
+              alt="Posicionamiento de ruedas"
+              sx={{
+                maxWidth: '100%',
+                height: 'auto',
+                borderRadius: 2,
+                boxShadow: 2
+              }}
+            />
+          </Box>
         </Box>
       )}
 
@@ -122,6 +136,20 @@ function WheelRecommendationResult({ result }) {
               Esta configuración uniforme es más fácil de mantener y rotar.
             </Typography>
           </Alert>
+          {/* Imagen de posicionamiento */}
+          <Box sx={{ mt: 3, display: 'flex', justifyContent: 'center' }}>
+            <Box
+              component="img"
+              src={wheelPositionImage}
+              alt="Posicionamiento de ruedas"
+              sx={{
+                maxWidth: '100%',
+                height: 'auto',
+                borderRadius: 2,
+                boxShadow: 2
+              }}
+            />
+          </Box>
         </Box>
       )}
 
@@ -165,7 +193,7 @@ function WheelRecommendationResult({ result }) {
           />
         )}
       </Box>
-    </Paper>
+    </Box>
   );
 }
 
