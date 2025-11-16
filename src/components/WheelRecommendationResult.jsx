@@ -7,7 +7,8 @@ import {
   Divider,
   Alert,
   Card,
-  CardContent
+  CardContent,
+  Tooltip
 } from '@mui/material';
 import {
   CheckCircle,
@@ -18,6 +19,13 @@ import {
 
 // Importar imagen SVG
 import patinPosicionesImage from '../assets/patin-posiciones.svg';
+
+// Descripciones de perfiles
+const PROFILE_DESCRIPTIONS = {
+  'Elíptico': 'Perfil elíptico ofrece un buen equilibrio entre agarre y velocidad. Ideal para patinadores que buscan estabilidad y control en curvas, especialmente útil en pista y asfalto liso.',
+  'Bullet': 'Perfil Bullet (puntiagudo) está optimizado para máxima velocidad. Reduce la resistencia al aire y mejora el rendimiento en rectas, ideal para competencias de velocidad en pista.',
+  'Más ancho para agarre': 'Perfil más ancho proporciona mayor superficie de contacto con el suelo, mejorando el agarre y la estabilidad. Ideal para skate cross, derrapes y terrenos irregulares.'
+};
 
 function WheelRecommendationResult({ result }) {
   if (!result || !result.recommendation) {
@@ -62,9 +70,24 @@ function WheelRecommendationResult({ result }) {
               <Typography variant="caption" display="block">
                 Perfil
               </Typography>
-              <Typography variant="h6" fontWeight="bold">
-                {profile}
-              </Typography>
+              <Tooltip 
+                title={PROFILE_DESCRIPTIONS[profile] || 'Información del perfil no disponible'} 
+                arrow
+                placement="top"
+              >
+                <Typography 
+                  variant="h6" 
+                  fontWeight="bold"
+                  sx={{ 
+                    cursor: 'help',
+                    textDecoration: 'underline',
+                    textDecorationStyle: 'dotted',
+                    textUnderlineOffset: '4px'
+                  }}
+                >
+                  {profile}
+                </Typography>
+              </Tooltip>
             </Grid>
             <Grid item xs={12} sm={4}>
               <Typography variant="caption" display="block">
@@ -178,18 +201,25 @@ function WheelRecommendationResult({ result }) {
           color="primary"
           variant="outlined"
         />
-        <Chip
-          label={`Perfil: ${profile}`}
-          color="primary"
-          variant="outlined"
-        />
-        {matchScore > 0 && (
+        <Tooltip 
+          title={PROFILE_DESCRIPTIONS[profile] || 'Información del perfil no disponible'} 
+          arrow
+          placement="top"
+        >
           <Chip
-            label={`Coincidencia: ${matchScore}%`}
-            color="success"
+            label={`Perfil: ${profile}`}
+            color="primary"
             variant="outlined"
+            sx={{ cursor: 'help' }}
           />
-        )}
+        </Tooltip>
+        {/*{matchScore > 0 && (*/}
+        {/*  <Chip*/}
+        {/*    label={`Coincidencia: ${matchScore}%`}*/}
+        {/*    color="success"*/}
+        {/*    variant="outlined"*/}
+        {/*  />*/}
+        {/*)}*/}
       </Box>
     </Box>
   );
