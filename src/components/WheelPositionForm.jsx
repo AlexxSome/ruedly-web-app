@@ -191,41 +191,82 @@ function WheelPositionForm({ onSubmit }) {
     return hardnessOrder.indexOf(a) - hardnessOrder.indexOf(b);
   };
   
+  // Verificar si todas las ruedas son del estándar (Firm/XFirm/XXFirm)
+  const areAllStandardWheels = (wheelsData) => {
+    const standardWheels = ['Firm', 'XFirm', 'XXFirm'];
+    return wheelsData.every(wheel => standardWheels.includes(wheel.hardness));
+  };
+
   // Obtener ruedas recomendadas según las preferencias del usuario
-  const getRecommendedWheels = (count, userData) => {
+  const getRecommendedWheels = (count, userData, wheelsData = []) => {
     let recommended = [];
     
-    // Basado en la prioridad del usuario
-    if (userData.priority === 'Más agarre') {
-      // Para más agarre, recomendamos ruedas más blandas
-      recommended = ['82A', '83A', '84A', '85A', '86A'];
-    } else if (userData.priority === 'Más velocidad') {
-      // Para más velocidad, recomendamos ruedas más duras
-      recommended = ['86A', '87A', '88A', '89A', '90A'];
+    // Si todas las ruedas son del estándar, completar con ruedas del estándar
+    if (areAllStandardWheels(wheelsData)) {
+      // Basado en la prioridad del usuario, pero solo con estándar
+      if (userData.priority === 'Más agarre') {
+        // Para más agarre, recomendamos Firm (más blanda del estándar)
+        recommended = ['Firm'];
+      } else if (userData.priority === 'Más velocidad') {
+        // Para más velocidad, recomendamos XXFirm (más dura del estándar)
+        recommended = ['XXFirm'];
+      } else {
+        // Balanceado: XFirm
+        recommended = ['XFirm'];
+      }
+      
+      // Si ya tienen ruedas del estándar, usar la más común o la más apropiada
+      let firmCount = 0;
+      let xfirmCount = 0;
+      let xxfirmCount = 0;
+      
+      wheelsData.forEach(wheel => {
+        if (wheel.hardness === 'Firm') firmCount += wheel.quantity;
+        else if (wheel.hardness === 'XFirm') xfirmCount += wheel.quantity;
+        else if (wheel.hardness === 'XXFirm') xxfirmCount += wheel.quantity;
+      });
+      
+      // Si hay una mayoría clara, usar esa
+      if (firmCount > xfirmCount && firmCount > xxfirmCount) {
+        recommended = ['Firm'];
+      } else if (xxfirmCount > firmCount && xxfirmCount > xfirmCount) {
+        recommended = ['XXFirm'];
+      } else if (xfirmCount > 0) {
+        recommended = ['XFirm'];
+      }
     } else {
-      // Balanceado
-      recommended = ['84A', '85A', '86A', '87A', '88A'];
+      // Si hay mezcla o solo numéricas, usar lógica numérica
+      if (userData.priority === 'Más agarre') {
+        // Para más agarre, recomendamos ruedas más blandas
+        recommended = ['82A', '83A', '84A', '85A', '86A'];
+      } else if (userData.priority === 'Más velocidad') {
+        // Para más velocidad, recomendamos ruedas más duras
+        recommended = ['86A', '87A', '88A', '89A', '90A'];
+      } else {
+        // Balanceado
+        recommended = ['84A', '85A', '86A', '87A', '88A'];
+      }
+      
+      // Ajustar según el tipo de suelo
+      if (userData.suelo === 'asfalto rugoso' || userData.suelo === 'calle') {
+        // Para superficies ásperas, ruedas un poco más duras
+        recommended = recommended.map(w => {
+          const hardness = parseInt(w);
+          if (!isNaN(hardness) && hardness < 88) return `${hardness + 2}A`;
+          return w;
+        });
+      } else if (userData.suelo === 'pista' || userData.suelo === 'pavimento liso') {
+        // Para superficies lisas, ruedas más blandas
+        recommended = recommended.map(w => {
+          const hardness = parseInt(w);
+          if (!isNaN(hardness) && hardness > 84) return `${hardness - 2}A`;
+          return w;
+        });
+      }
+      
+      // Asegurar que no haya duplicados
+      recommended = [...new Set(recommended)];
     }
-    
-    // Ajustar según el tipo de suelo
-    if (userData.suelo === 'asfalto rugoso' || userData.suelo === 'calle') {
-      // Para superficies ásperas, ruedas un poco más duras
-      recommended = recommended.map(w => {
-        const hardness = parseInt(w);
-        if (!isNaN(hardness) && hardness < 88) return `${hardness + 2}A`;
-        return w;
-      });
-    } else if (userData.suelo === 'pista' || userData.suelo === 'pavimento liso') {
-      // Para superficies lisas, ruedas más blandas
-      recommended = recommended.map(w => {
-        const hardness = parseInt(w);
-        if (!isNaN(hardness) && hardness > 84) return `${hardness - 2}A`;
-        return w;
-      });
-    }
-    
-    // Asegurar que no haya duplicados
-    recommended = [...new Set(recommended)];
     
     // Repetir el array si es necesario para alcanzar el conteo deseado
     const result = [];
@@ -251,7 +292,7 @@ function WheelPositionForm({ onSubmit }) {
     // Si no hay suficientes ruedas, agregar recomendadas
     if (totalWheels < 8) {
       const wheelsToAdd = 8 - totalWheels;
-      const recommendedWheels = getRecommendedWheels(wheelsToAdd, userData);
+      const recommendedWheels = getRecommendedWheels(wheelsToAdd, userData, wheelsData);
       allWheels = [...allWheels, ...recommendedWheels];
     }
     // Si hay más de 8 ruedas, seleccionar las mejores según la prioridad
