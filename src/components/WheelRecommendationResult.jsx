@@ -8,7 +8,9 @@ import {
   Alert,
   Card,
   CardContent,
-  Tooltip
+  Tooltip,
+  useMediaQuery,
+  useTheme
 } from '@mui/material';
 import {
   CheckCircle,
@@ -23,11 +25,14 @@ import patinPosicionesImage from '../assets/patin-posiciones.svg';
 // Descripciones de perfiles
 const PROFILE_DESCRIPTIONS = {
   'Elíptico': 'Perfil elíptico ofrece un buen equilibrio entre agarre y velocidad. Ideal para patinadores que buscan estabilidad y control en curvas, especialmente útil en pista y asfalto liso.',
-  'Bullet': 'Perfil Bullet (puntiagudo) está optimizado para máxima velocidad. Reduce la resistencia al aire y mejora el rendimiento en rectas, ideal para competencias de velocidad en pista.',
+  'Bullet': 'Perfil Bullet, está optimizado para máxima velocidad. Reduce la resistencia al aire y mejora el rendimiento en rectas, ideal para competencias de velocidad en pista.',
   'Más ancho para agarre': 'Perfil más ancho proporciona mayor superficie de contacto con el suelo, mejorando el agarre y la estabilidad. Ideal para skate cross, derrapes y terrenos irregulares.'
 };
 
 function WheelRecommendationResult({ result }) {
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
+
   if (!result || !result.recommendation) {
     return (
       <Box sx={{ p: 3, textAlign: 'center' }}>
@@ -40,6 +45,7 @@ function WheelRecommendationResult({ result }) {
 
   const { recommendation, isFallback, matchScore } = result;
   const { hardness, profile, notes, mixedConfig, wheelSize } = recommendation;
+  const profileDescription = PROFILE_DESCRIPTIONS[profile] || 'Información del perfil no disponible';
 
   return (
     <Box sx={{ p: 3 }}>
@@ -70,24 +76,47 @@ function WheelRecommendationResult({ result }) {
               <Typography variant="caption" display="block">
                 Perfil
               </Typography>
-              <Tooltip 
-                title={PROFILE_DESCRIPTIONS[profile] || 'Información del perfil no disponible'} 
-                arrow
-                placement="top"
-              >
-                <Typography 
-                  variant="h6" 
-                  fontWeight="bold"
-                  sx={{ 
-                    cursor: 'help',
-                    textDecoration: 'underline',
-                    textDecorationStyle: 'dotted',
-                    textUnderlineOffset: '4px'
-                  }}
+              {isMobile ? (
+                <Box>
+                  <Typography 
+                    variant="h6" 
+                    fontWeight="bold"
+                  >
+                    {profile}
+                  </Typography>
+                  <Typography 
+                    variant="caption" 
+                    color="text.secondary"
+                    sx={{ 
+                      display: 'block',
+                      mt: 0.5,
+                      fontSize: '0.7rem',
+                      lineHeight: 1.4
+                    }}
+                  >
+                    {profileDescription}
+                  </Typography>
+                </Box>
+              ) : (
+                <Tooltip 
+                  title={profileDescription} 
+                  arrow
+                  placement="top"
                 >
-                  {profile}
-                </Typography>
-              </Tooltip>
+                  <Typography 
+                    variant="h6" 
+                    fontWeight="bold"
+                    sx={{ 
+                      cursor: 'help',
+                      textDecoration: 'underline',
+                      textDecorationStyle: 'dotted',
+                      textUnderlineOffset: '4px'
+                    }}
+                  >
+                    {profile}
+                  </Typography>
+                </Tooltip>
+              )}
             </Grid>
             <Grid item xs={12} sm={4}>
               <Typography variant="caption" display="block">
@@ -201,18 +230,26 @@ function WheelRecommendationResult({ result }) {
           color="primary"
           variant="outlined"
         />
-        <Tooltip 
-          title={PROFILE_DESCRIPTIONS[profile] || 'Información del perfil no disponible'} 
-          arrow
-          placement="top"
-        >
+        {isMobile ? (
           <Chip
             label={`Perfil: ${profile}`}
             color="primary"
             variant="outlined"
-            sx={{ cursor: 'help' }}
           />
-        </Tooltip>
+        ) : (
+          <Tooltip 
+            title={profileDescription} 
+            arrow
+            placement="top"
+          >
+            <Chip
+              label={`Perfil: ${profile}`}
+              color="primary"
+              variant="outlined"
+              sx={{ cursor: 'help' }}
+            />
+          </Tooltip>
+        )}
         {/*{matchScore > 0 && (*/}
         {/*  <Chip*/}
         {/*    label={`Coincidencia: ${matchScore}%`}*/}
