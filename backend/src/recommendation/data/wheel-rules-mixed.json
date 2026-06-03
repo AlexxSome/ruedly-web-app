@@ -1,0 +1,367 @@
+[
+  {
+    "id": "velocidad_pista_explosivo_frio_mixto_standard_50_80kg",
+    "mode": "standard",
+    "conditions": {
+      "disciplina": ["velocidad"],
+      "rangoPesoKg": { "min": 50, "max": 80 },
+      "rangoEdad": { "min": 14, "max": 40 },
+      "experiencia": ["intermedio", "avanzado", "alta competencia"],
+      "estilo": ["explosivo (velocidad)"],
+      "suelo": ["pista"],
+      "temperatura": ["frio"],
+      "priority": ["Más agarre", "Balance entre agarre y velocidad"]
+    },
+    "recommendation": {
+      "hardness": "XFirm",
+      "profile": "Bullet",
+      "notes": "Configuración mixta para pista fría: más agarre al entrar en curva con Firm delante y mejor salida con XFirm atrás.",
+      "mixedConfig": {
+        "positions": {
+          "1": "Firm",
+          "2": "Firm",
+          "3": "XFirm",
+          "4": "XFirm"
+        },
+        "description": "Firm delante para asegurar la entrada en curva; XFirm atrás para conservar velocidad en la salida."
+      }
+    }
+  },
+  {
+    "id": "velocidad_pista_explosivo_templado_caluroso_mixto_standard_60_85kg",
+    "mode": "standard",
+    "conditions": {
+      "disciplina": ["velocidad"],
+      "rangoPesoKg": { "min": 60, "max": 85 },
+      "rangoEdad": { "min": 16, "max": 40 },
+      "experiencia": ["avanzado", "alta competencia"],
+      "estilo": ["explosivo (velocidad)"],
+      "suelo": ["pista"],
+      "temperatura": ["templado", "caluroso", "sin especificar"],
+      "priority": ["Más velocidad", "Balance entre agarre y velocidad"]
+    },
+    "recommendation": {
+      "hardness": "XXFirm",
+      "profile": "Bullet",
+      "notes": "Para pista rápida en clima templado o caluroso: XFirm delante y XXFirm atrás dan máxima salida de curva sin perder estabilidad.",
+      "mixedConfig": {
+        "positions": {
+          "1": "XFirm",
+          "2": "XFirm",
+          "3": "XXFirm",
+          "4": "XXFirm"
+        },
+        "description": "Delante XFirm para que la rueda se 'agarre' lo justo al entrar; atrás XXFirm para máxima transferencia de potencia."
+      }
+    }
+  },
+  {
+    "id": "velocidad_asfalto_liso_mixto_templado_numeric_55_90kg",
+    "mode": "numeric",
+    "conditions": {
+      "disciplina": ["velocidad"],
+      "rangoPesoKg": { "min": 55, "max": 90 },
+      "rangoEdad": { "min": 16, "max": 45 },
+      "experiencia": ["intermedio", "avanzado"],
+      "estilo": ["mixto", "explosivo (velocidad)"],
+      "suelo": ["asfalto liso"],
+      "temperatura": ["templado", "sin especificar"],
+      "priority": ["Balance entre agarre y velocidad"]
+    },
+    "recommendation": {
+      "hardness": "86A",
+      "profile": "Elíptico",
+      "notes": "En asfalto liso, mezclar durezas cercanas mejora el agarre frontal y mantiene buena velocidad en la parte trasera.",
+      "mixedConfig": {
+        "positions": {
+          "1": "84A",
+          "2": "85A",
+          "3": "86A",
+          "4": "86A"
+        },
+        "description": "Delante 84A–85A para agarre y confianza; atrás 86A para conservar mejor la velocidad en rectas."
+      }
+    }
+  },
+  {
+    "id": "velocidad_asfalto_liso_frio_mixto_numeric_55_90kg",
+    "mode": "numeric",
+    "conditions": {
+      "disciplina": ["velocidad"],
+      "rangoPesoKg": { "min": 55, "max": 90 },
+      "rangoEdad": { "min": 16, "max": 45 },
+      "experiencia": ["intermedio", "avanzado"],
+      "estilo": ["mixto", "explosivo (velocidad)"],
+      "suelo": ["asfalto liso"],
+      "temperatura": ["frio"],
+      "priority": ["Más agarre"]
+    },
+    "recommendation": {
+      "hardness": "85A",
+      "profile": "Elíptico",
+      "notes": "Con asfalto frío conviene un set más blando delante para no perder tracción en salidas y curvas.",
+      "mixedConfig": {
+        "positions": {
+          "1": "83A",
+          "2": "84A",
+          "3": "85A",
+          "4": "85A"
+        },
+        "description": "Delante 83A–84A aumentan el contacto y reducen deslizamientos; atrás 85A estabiliza la patada."
+      }
+    }
+  },
+  {
+    "id": "fondo_asfalto_liso_mixto_alltemps_numeric_50_85kg",
+    "mode": "numeric",
+    "conditions": {
+      "disciplina": ["fondo"],
+      "rangoPesoKg": { "min": 50, "max": 85 },
+      "rangoEdad": { "min": 15, "max": 50 },
+      "experiencia": ["intermedio", "avanzado"],
+      "estilo": ["fondo", "mixto"],
+      "suelo": ["asfalto liso"],
+      "temperatura": ["frio", "templado", "caluroso", "sin especificar"],
+      "priority": ["Balance entre agarre y velocidad"]
+    },
+    "recommendation": {
+      "hardness": "85A",
+      "profile": "Elíptico",
+      "notes": "Para fondo en asfalto liso, una ligera mezcla alrededor de 84A–86A ofrece comodidad y buena conservación de velocidad.",
+      "mixedConfig": {
+        "positions": {
+          "1": "84A",
+          "2": "84A",
+          "3": "85A",
+          "4": "86A"
+        },
+        "description": "Delante algo más blando para comodidad y agarre; atrás algo más duro para mantener el ritmo en rectas largas."
+      }
+    }
+  },
+  {
+    "id": "fondo_asfalto_rugoso_mixto_alltemps_numeric_55_90kg",
+    "mode": "numeric",
+    "conditions": {
+      "disciplina": ["fondo"],
+      "rangoPesoKg": { "min": 55, "max": 90 },
+      "rangoEdad": { "min": 18, "max": 55 },
+      "experiencia": ["intermedio", "avanzado"],
+      "estilo": ["fondo", "mixto"],
+      "suelo": ["asfalto rugoso"],
+      "temperatura": ["frio", "templado", "caluroso", "sin especificar"],
+      "priority": ["Más agarre", "Balance entre agarre y velocidad"]
+    },
+    "recommendation": {
+      "hardness": "84A",
+      "profile": "Más ancho para agarre",
+      "notes": "En asfalto rugoso, mezclar durezas alrededor de 83A–85A ayuda a filtrar vibraciones y mantener tracción durante muchos kilómetros.",
+      "mixedConfig": {
+        "positions": {
+          "1": "83A",
+          "2": "84A",
+          "3": "84A",
+          "4": "85A"
+        },
+        "description": "Las ruedas delanteras más blandas filtran la rugosidad; la trasera ligeramente más dura estabiliza el patín."
+      }
+    }
+  },
+  {
+    "id": "skate_cross_asfalto_rugoso_mixto_standard_50_85kg",
+    "mode": "standard",
+    "conditions": {
+      "disciplina": ["skate cross"],
+      "rangoPesoKg": { "min": 50, "max": 85 },
+      "rangoEdad": { "min": 14, "max": 40 },
+      "experiencia": ["intermedio", "avanzado"],
+      "estilo": ["tecnico", "mixto"],
+      "suelo": ["asfalto rugoso"],
+      "temperatura": ["frio", "templado", "caluroso", "sin especificar"],
+      "priority": ["Más agarre"]
+    },
+    "recommendation": {
+      "hardness": "Firm",
+      "profile": "Más ancho para agarre",
+      "notes": "Para skate cross en suelo rugoso, se prioriza agarre y control en obstáculos usando Firm y XFirm combinados.",
+      "mixedConfig": {
+        "positions": {
+          "1": "Firm",
+          "2": "Firm",
+          "3": "XFirm",
+          "4": "XFirm"
+        },
+        "description": "Firm delante para máxima tracción en apoyos y frenadas; XFirm atrás para evitar exceso de deformación al recibir impactos."
+      }
+    }
+  },
+  {
+    "id": "skate_cross_indoor_mixto_standard_45_80kg",
+    "mode": "standard",
+    "conditions": {
+      "disciplina": ["skate cross"],
+      "rangoPesoKg": { "min": 45, "max": 80 },
+      "rangoEdad": { "min": 12, "max": 35 },
+      "experiencia": ["principiante", "intermedio"],
+      "estilo": ["tecnico"],
+      "suelo": ["indoor"],
+      "temperatura": ["templado", "sin especificar"],
+      "priority": ["Más agarre", "Balance entre agarre y velocidad"]
+    },
+    "recommendation": {
+      "hardness": "Firm",
+      "profile": "Elíptico",
+      "notes": "En indoor se busca un set con mucho control en curvas y saltos, manteniendo algo de respuesta en la parte trasera.",
+      "mixedConfig": {
+        "positions": {
+          "1": "Firm",
+          "2": "Firm",
+          "3": "Firm",
+          "4": "XFirm"
+        },
+        "description": "Tres ruedas Firm para agarre homogéneo y una XFirm atrás para estabilidad en aterrizajes y salidas."
+      }
+    }
+  },
+  {
+    "id": "derrapes_indoor_mixto_numeric_50_85kg",
+    "mode": "numeric",
+    "conditions": {
+      "disciplina": ["derrapes"],
+      "rangoPesoKg": { "min": 50, "max": 85 },
+      "rangoEdad": { "min": 16, "max": 45 },
+      "experiencia": ["intermedio", "avanzado"],
+      "estilo": ["tecnico"],
+      "suelo": ["indoor"],
+      "temperatura": ["templado", "sin especificar"],
+      "priority": ["Más agarre", "Balance entre agarre y velocidad"]
+    },
+    "recommendation": {
+      "hardness": "86A",
+      "profile": "Más ancho para agarre",
+      "notes": "En derrapes indoor se busca un equilibrio entre agarre y capacidad de romper tracción de forma controlada.",
+      "mixedConfig": {
+        "positions": {
+          "1": "84A",
+          "2": "85A",
+          "3": "86A",
+          "4": "86A"
+        },
+        "description": "Delante más blando para iniciar el derrape con control; atrás más duro para que el derrape sea predecible y no excesivo."
+      }
+    }
+  },
+  {
+    "id": "derrapes_calle_mixto_numeric_50_85kg",
+    "mode": "numeric",
+    "conditions": {
+      "disciplina": ["derrapes"],
+      "rangoPesoKg": { "min": 50, "max": 85 },
+      "rangoEdad": { "min": 16, "max": 45 },
+      "experiencia": ["intermedio", "avanzado"],
+      "estilo": ["tecnico", "free style"],
+      "suelo": ["calle"],
+      "temperatura": ["frio", "templado", "caluroso", "sin especificar"],
+      "priority": ["Más agarre", "Balance entre agarre y velocidad"]
+    },
+    "recommendation": {
+      "hardness": "84A",
+      "profile": "Más ancho para agarre",
+      "notes": "En calle con derrapes se necesita buena tracción inicial pero con posibilidad de deslizar de forma controlada.",
+      "mixedConfig": {
+        "positions": {
+          "1": "83A",
+          "2": "84A",
+          "3": "84A",
+          "4": "85A"
+        },
+        "description": "Las delanteras más blandas se 'agarran' al iniciar; la trasera algo más dura define el fin del derrape."
+      }
+    }
+  },
+  {
+    "id": "freestyle_calle_mixto_standard_45_80kg",
+    "mode": "standard",
+    "conditions": {
+      "disciplina": ["free style (calle)"],
+      "rangoPesoKg": { "min": 45, "max": 80 },
+      "rangoEdad": { "min": 14, "max": 40 },
+      "experiencia": ["principiante", "intermedio"],
+      "estilo": ["free style"],
+      "suelo": ["calle"],
+      "temperatura": ["frio", "templado", "caluroso", "sin especificar"],
+      "priority": ["Más agarre", "Balance entre agarre y velocidad"]
+    },
+    "recommendation": {
+      "hardness": "Firm",
+      "profile": "Más ancho para agarre",
+      "notes": "Para free style urbano se prioriza control, seguridad y capacidad de reaccionar a baches e irregularidades.",
+      "mixedConfig": {
+        "positions": {
+          "1": "Firm",
+          "2": "Firm",
+          "3": "Firm",
+          "4": "XFirm"
+        },
+        "description": "Mayor agarre en las tres primeras ruedas para maniobras; rueda trasera XFirm estabiliza la patinada en desplazamientos largos."
+      }
+    }
+  },
+  {
+    "id": "freestyle_asfalto_liso_mixto_standard_45_80kg",
+    "mode": "standard",
+    "conditions": {
+      "disciplina": ["free style (calle)"],
+      "rangoPesoKg": { "min": 45, "max": 80 },
+      "rangoEdad": { "min": 14, "max": 40 },
+      "experiencia": ["intermedio", "avanzado"],
+      "estilo": ["free style", "tecnico"],
+      "suelo": ["asfalto liso"],
+      "temperatura": ["templado", "sin especificar"],
+      "priority": ["Balance entre agarre y velocidad"]
+    },
+    "recommendation": {
+      "hardness": "XFirm",
+      "profile": "Elíptico",
+      "notes": "En asfalto liso, free style técnico se beneficia de algo más de respuesta atrás para trucos de velocidad y cambios rápidos.",
+      "mixedConfig": {
+        "positions": {
+          "1": "Firm",
+          "2": "XFirm",
+          "3": "XFirm",
+          "4": "XFirm"
+        },
+        "description": "Una rueda Firm en posición 1 suaviza la entrada; las XFirm restantes dan precisión en giros y trucos rápidos."
+      }
+    }
+  },
+  {
+    "id": "velocidad_pista_mixto_alto_rendimiento_numeric_65_95kg",
+    "mode": "numeric",
+    "conditions": {
+      "disciplina": ["velocidad"],
+      "rangoPesoKg": { "min": 65, "max": 95 },
+      "rangoEdad": { "min": 18, "max": 40 },
+      "experiencia": ["alto rendimiento"],
+      "estilo": ["explosivo (velocidad)", "mixto"],
+      "suelo": ["pista"],
+      "temperatura": ["templado", "caluroso"],
+      "priority": ["Más velocidad"]
+    },
+    "recommendation": {
+      "hardness": "88A",
+      "profile": "Bullet",
+      "notes": "Configuración agresiva para alto rendimiento en pista: transita de un poco más de agarre delante a máxima rigidez atrás.",
+      "mixedConfig": {
+        "positions": {
+          "1": "86A",
+          "2": "87A",
+          "3": "88A",
+          "4": "89A"
+        },
+        "description": "Cada posición sube ligeramente de dureza, permitiendo entrada algo más segura y máxima velocidad al final del set."
+      }
+    }
+  }
+]
+
