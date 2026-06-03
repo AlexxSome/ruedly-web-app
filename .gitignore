@@ -11,6 +11,9 @@ out/
 tmp/
 temp/
 .vite/
+coverage/
+*.tsbuildinfo
+.env
 
 # Mobile (Expo / React Native / native)
 .expo/
