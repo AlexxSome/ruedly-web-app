@@ -151,36 +151,150 @@ export function calculateWheelPosition(data) {
   // Determinar estrategia basada en datos del usuario
   const positioningStrategy = determinePositioningStrategy(userData);
 
+  // Agrupar ruedas por dureza y contar cuántas hay de cada tipo
+  const wheelsByHardness = {};
+  allWheels.forEach(wheel => {
+    wheelsByHardness[wheel] = (wheelsByHardness[wheel] || 0) + 1;
+  });
+
+  // Obtener durezas ordenadas de más blanda a más dura
+  const hardnessTypes = Object.keys(wheelsByHardness).sort(compareHardness);
+
   const resultRight = ['', '', '', ''];
   const resultLeft = ['', '', '', ''];
 
-  // Estrategia adaptativa basada en frontBias
-  // frontBias alto (>0.5) = más blandas delante
-  // frontBias bajo (<0.5) = más duras delante (para velocidad)
+  // Arrays para distribuir ruedas: delanteras (0-1) y traseras (2-3) de cada pie
+  const rightFront = [];
+  const rightBack = [];
+  const leftFront = [];
+  const leftBack = [];
 
-  if (positioningStrategy.frontBias >= 0.5) {
-    // Estrategia estándar: más blandas delante, más duras atrás
-    resultRight[0] = allWheels[0]; // Más blanda
-    resultRight[1] = allWheels[2]; // Tercera más blanda
-    resultRight[2] = allWheels[5]; // Sexta (más dura del medio)
-    resultRight[3] = allWheels[7]; // Más dura
-
-    resultLeft[0] = allWheels[1];  // Segunda más blanda
-    resultLeft[1] = allWheels[3];  // Cuarta más blanda
-    resultLeft[2] = allWheels[4];  // Quinta (más blanda del medio)
-    resultLeft[3] = allWheels[6];  // Séptima (segunda más dura)
+  // Determinar qué durezas van delante y cuáles atrás
+  const frontBias = positioningStrategy.frontBias;
+  // Si frontBias es alto (>0.5), más ruedas blandas van delante
+  // Si frontBias es bajo (<0.5), más ruedas duras van delante
+  let frontHardness, backHardness;
+  
+  if (frontBias >= 0.5) {
+    // Estrategia estándar: más blandas delante
+    const splitIndex = Math.max(1, Math.min(
+      hardnessTypes.length - 1,
+      Math.round(hardnessTypes.length * frontBias)
+    ));
+    frontHardness = hardnessTypes.slice(0, splitIndex); // Más blandas van delante
+    backHardness = hardnessTypes.slice(splitIndex);      // Más duras van atrás
   } else {
-    // Estrategia para velocidad: más duras delante, más blandas atrás
-    // (menos común, pero útil para velocidad pura)
-    resultRight[0] = allWheels[6]; // Segunda más dura
-    resultRight[1] = allWheels[7]; // Más dura
-    resultRight[2] = allWheels[1]; // Segunda más blanda
-    resultRight[3] = allWheels[0]; // Más blanda
+    // Estrategia para velocidad: más duras delante
+    const splitIndex = Math.max(1, Math.min(
+      hardnessTypes.length - 1,
+      Math.round(hardnessTypes.length * (1 - frontBias))
+    ));
+    frontHardness = hardnessTypes.slice(-splitIndex).reverse(); // Más duras van delante
+    backHardness = hardnessTypes.slice(0, hardnessTypes.length - splitIndex); // Más blandas van atrás
+  }
 
-    resultLeft[0] = allWheels[5];  // Tercera más dura
-    resultLeft[1] = allWheels[4];  // Cuarta más dura
-    resultLeft[2] = allWheels[2];  // Tercera más blanda
-    resultLeft[3] = allWheels[3];  // Cuarta más blanda
+  // Distribuir cada tipo de dureza equitativamente entre ambos pies
+  hardnessTypes.forEach(hardness => {
+    const count = wheelsByHardness[hardness];
+    const isFront = frontHardness.includes(hardness);
+
+    // Distribuir equitativamente: si hay 2, una en cada pie; si hay 4, 2 en cada pie, etc.
+    for (let i = 0; i < count; i++) {
+      const goesToRight = i % 2 === 0;
+      
+      if (isFront) {
+        if (goesToRight) {
+          rightFront.push(hardness);
+        } else {
+          leftFront.push(hardness);
+        }
+      } else {
+        if (goesToRight) {
+          rightBack.push(hardness);
+        } else {
+          leftBack.push(hardness);
+        }
+      }
+    }
+  });
+
+  // Ordenar dentro de cada grupo para mantener orden de dureza
+  rightFront.sort(compareHardness);
+  leftFront.sort(compareHardness);
+  rightBack.sort(compareHardness);
+  leftBack.sort(compareHardness);
+
+  // Asegurar que cada pie tenga 2 delanteras y 2 traseras
+  // Si hay desbalance, redistribuir
+  const balanceGroups = () => {
+    // Si un pie tiene más delanteras de las necesarias, mover a traseras
+    while (rightFront.length > 2 && rightBack.length < 2) {
+      rightBack.push(rightFront.pop());
+    }
+    while (leftFront.length > 2 && leftBack.length < 2) {
+      leftBack.push(leftFront.pop());
+    }
+    
+    // Si un pie tiene más traseras de las necesarias, mover a delanteras
+    while (rightBack.length > 2 && rightFront.length < 2) {
+      rightFront.push(rightBack.pop());
+    }
+    while (leftBack.length > 2 && leftFront.length < 2) {
+      leftFront.push(leftBack.pop());
+    }
+
+    // Si aún hay desbalance, redistribuir entre pies
+    while (rightFront.length + rightBack.length < 4) {
+      if (leftFront.length > 2) {
+        rightFront.push(leftFront.shift());
+      } else if (leftBack.length > 2) {
+        rightBack.push(leftBack.shift());
+      } else {
+        break;
+      }
+    }
+
+    while (leftFront.length + leftBack.length < 4) {
+      if (rightFront.length > 2) {
+        leftFront.push(rightFront.shift());
+      } else if (rightBack.length > 2) {
+        leftBack.push(rightBack.shift());
+      } else {
+        break;
+      }
+    }
+  };
+
+  balanceGroups();
+
+  // Asignar a las posiciones finales
+  // Delanteras: posiciones 0 y 1, Traseras: posiciones 2 y 3
+  resultRight[0] = rightFront[0] || '';
+  resultRight[1] = rightFront[1] || rightBack[0] || '';
+  resultRight[2] = rightBack[0] || rightFront[1] || '';
+  resultRight[3] = rightBack[1] || '';
+
+  resultLeft[0] = leftFront[0] || '';
+  resultLeft[1] = leftFront[1] || leftBack[0] || '';
+  resultLeft[2] = leftBack[0] || leftFront[1] || '';
+  resultLeft[3] = leftBack[1] || '';
+
+  // Completar cualquier posición vacía con ruedas restantes
+  const allRemaining = [
+    ...rightFront.slice(2),
+    ...rightBack.slice(2),
+    ...leftFront.slice(2),
+    ...leftBack.slice(2)
+  ].sort(compareHardness);
+
+  let remainingIndex = 0;
+  for (let i = 0; i < 4; i++) {
+    if (!resultRight[i] && remainingIndex < allRemaining.length) {
+      resultRight[i] = allRemaining[remainingIndex++];
+    }
+    if (!resultLeft[i] && remainingIndex < allRemaining.length) {
+      resultLeft[i] = allRemaining[remainingIndex++];
+    }
   }
 
   return {

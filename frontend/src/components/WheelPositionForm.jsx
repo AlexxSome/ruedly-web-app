@@ -17,7 +17,7 @@ import {
   Radio,
   Divider
 } from '@mui/material';
-import { Add, Delete, Calculate, Settings } from '@mui/icons-material';
+import { Add, Delete, Calculate, Settings, Info } from '@mui/icons-material';
 
 const HARDNESS_OPTIONS = [
   { value: 'Firm', label: 'Firm' },
@@ -87,6 +87,7 @@ function WheelPositionForm({ onSubmit }) {
     }
   };
 
+
   const validate = () => {
     const newErrors = {};
     let totalWheels = 0;
@@ -102,9 +103,16 @@ function WheelPositionForm({ onSubmit }) {
         totalWheels += parseInt(wheel.quantity);
       }
     });
-
-    if (totalWheels !== 8) {
-      newErrors.total = `Debes tener exactamente 8 ruedas. Total actual: ${totalWheels}`;
+    
+    // Si no hay ruedas, mostrar error
+    if (totalWheels === 0) {
+      newErrors.total = 'Ingresa al menos una rueda';
+    }
+    
+    // Validar datos del usuario necesarios para recomendaciones
+    if (totalWheels < 8) {
+      if (!userData.priority) newErrors.priority = 'Selecciona una prioridad para recomendar ruedas adicionales';
+      if (!userData.suelo) newErrors.suelo = 'Selecciona un tipo de suelo para recomendar ruedas adicionales';
     }
 
     // Validar datos del usuario
@@ -119,8 +127,214 @@ function WheelPositionForm({ onSubmit }) {
     return Object.keys(newErrors).length === 0;
   };
 
+  // Función para seleccionar y completar las ruedas según la prioridad del usuario
+  const selectAndCompleteWheels = (wheelsData, userData) => {
+    // Aplanar el array de ruedas
+    let allWheels = [];
+    wheelsData.forEach(wheel => {
+      for (let i = 0; i < wheel.quantity; i++) {
+        allWheels.push(wheel.hardness);
+      }
+    });
+    
+    const totalWheels = allWheels.length;
+    const wheelsNeeded = 8 - totalWheels;
+    
+    // Si faltan ruedas, agregar recomendadas
+    if (wheelsNeeded > 0) {
+      const recommendedWheels = getRecommendedWheels(userData);
+      let recommendedCount = 0;
+      
+      // Agregar ruedas recomendadas hasta completar 8
+      while (allWheels.length < 8) {
+        allWheels.push(recommendedWheels[recommendedCount % recommendedWheels.length]);
+        recommendedCount++;
+      }
+    }
+    
+    // Ordenar por dureza según la prioridad del usuario
+    if (userData.priority === 'Más agarre') {
+      // Para más agarre, ordenar de más blanda a más dura
+      allWheels.sort((a, b) => compareHardness(a, b));
+    } else if (userData.priority === 'Más velocidad') {
+      // Para más velocidad, ordenar de más dura a más blanda
+      allWheels.sort((a, b) => -compareHardness(a, b));
+    } else {
+      // Para balance, alternar entre blanda y dura
+      allWheels.sort((a, b) => compareHardness(a, b));
+      const balancedWheels = [];
+      let left = 0;
+      let right = allWheels.length - 1;
+      
+      while (left <= right) {
+        if (left === right) {
+          balancedWheels.push(allWheels[left]);
+        } else {
+          balancedWheels.push(allWheels[left], allWheels[right]);
+        }
+        left++;
+        right--;
+      }
+      allWheels = balancedWheels;
+    }
+    
+    return {
+      wheels: allWheels,
+      addedWheels,
+      originalWheels: totalWheels
+    };
+  };
+
+  // Función para comparar durezas de ruedas
+  const compareHardness = (a, b) => {
+    const hardnessOrder = ['82A', '83A', '84A', '85A', '86A', '87A', '88A', '89A', '90A', 'Firm', 'XFirm', 'XXFirm'];
+    return hardnessOrder.indexOf(a) - hardnessOrder.indexOf(b);
+  };
+  
+  // Verificar si todas las ruedas son del estándar (Firm/XFirm/XXFirm)
+  const areAllStandardWheels = (wheelsData) => {
+    const standardWheels = ['Firm', 'XFirm', 'XXFirm'];
+    return wheelsData.every(wheel => standardWheels.includes(wheel.hardness));
+  };
+
+  // Obtener ruedas recomendadas según las preferencias del usuario
+  const getRecommendedWheels = (count, userData, wheelsData = []) => {
+    let recommended = [];
+    
+    // Si todas las ruedas son del estándar, completar con ruedas del estándar
+    if (areAllStandardWheels(wheelsData)) {
+      // Basado en la prioridad del usuario, pero solo con estándar
+      if (userData.priority === 'Más agarre') {
+        // Para más agarre, recomendamos Firm (más blanda del estándar)
+        recommended = ['Firm'];
+      } else if (userData.priority === 'Más velocidad') {
+        // Para más velocidad, recomendamos XXFirm (más dura del estándar)
+        recommended = ['XXFirm'];
+      } else {
+        // Balanceado: XFirm
+        recommended = ['XFirm'];
+      }
+      
+      // Si ya tienen ruedas del estándar, usar la más común o la más apropiada
+      let firmCount = 0;
+      let xfirmCount = 0;
+      let xxfirmCount = 0;
+      
+      wheelsData.forEach(wheel => {
+        if (wheel.hardness === 'Firm') firmCount += wheel.quantity;
+        else if (wheel.hardness === 'XFirm') xfirmCount += wheel.quantity;
+        else if (wheel.hardness === 'XXFirm') xxfirmCount += wheel.quantity;
+      });
+      
+      // Si hay una mayoría clara, usar esa
+      if (firmCount > xfirmCount && firmCount > xxfirmCount) {
+        recommended = ['Firm'];
+      } else if (xxfirmCount > firmCount && xxfirmCount > xfirmCount) {
+        recommended = ['XXFirm'];
+      } else if (xfirmCount > 0) {
+        recommended = ['XFirm'];
+      }
+    } else {
+      // Si hay mezcla o solo numéricas, usar lógica numérica
+      if (userData.priority === 'Más agarre') {
+        // Para más agarre, recomendamos ruedas más blandas
+        recommended = ['82A', '83A', '84A', '85A', '86A'];
+      } else if (userData.priority === 'Más velocidad') {
+        // Para más velocidad, recomendamos ruedas más duras
+        recommended = ['86A', '87A', '88A', '89A', '90A'];
+      } else {
+        // Balanceado
+        recommended = ['84A', '85A', '86A', '87A', '88A'];
+      }
+      
+      // Ajustar según el tipo de suelo
+      if (userData.suelo === 'asfalto rugoso' || userData.suelo === 'calle') {
+        // Para superficies ásperas, ruedas un poco más duras
+        recommended = recommended.map(w => {
+          const hardness = parseInt(w);
+          if (!isNaN(hardness) && hardness < 88) return `${hardness + 2}A`;
+          return w;
+        });
+      } else if (userData.suelo === 'pista' || userData.suelo === 'pavimento liso') {
+        // Para superficies lisas, ruedas más blandas
+        recommended = recommended.map(w => {
+          const hardness = parseInt(w);
+          if (!isNaN(hardness) && hardness > 84) return `${hardness - 2}A`;
+          return w;
+        });
+      }
+      
+      // Asegurar que no haya duplicados
+      recommended = [...new Set(recommended)];
+    }
+    
+    // Repetir el array si es necesario para alcanzar el conteo deseado
+    const result = [];
+    for (let i = 0; i < count; i++) {
+      result.push(recommended[i % recommended.length]);
+    }
+    
+    return result;
+  };
+  
+  // Procesar las ruedas: completar con recomendadas o seleccionar las mejores
+  const processWheels = (wheelsData, userData) => {
+    // Aplanar el array de ruedas
+    let allWheels = [];
+    wheelsData.forEach(wheel => {
+      for (let i = 0; i < wheel.quantity; i++) {
+        allWheels.push(wheel.hardness);
+      }
+    });
+    
+    const totalWheels = allWheels.length;
+    
+    // Si no hay suficientes ruedas, agregar recomendadas
+    if (totalWheels < 8) {
+      const wheelsToAdd = 8 - totalWheels;
+      const recommendedWheels = getRecommendedWheels(wheelsToAdd, userData, wheelsData);
+      allWheels = [...allWheels, ...recommendedWheels];
+    }
+    // Si hay más de 8 ruedas, seleccionar las mejores según la prioridad
+    else if (totalWheels > 8) {
+      if (userData.priority === 'Más agarre') {
+        // Para más agarre, seleccionar las más blandas
+        allWheels = allWheels.sort(compareHardness).slice(0, 8);
+      } else if (userData.priority === 'Más velocidad') {
+        // Para más velocidad, seleccionar las más duras
+        allWheels = allWheels.sort((a, b) => -compareHardness(a, b)).slice(0, 8);
+      } else {
+        // Balanceado: mezclar suaves y duras
+        allWheels.sort(compareHardness);
+        const balanced = [];
+        let left = 0;
+        let right = allWheels.length - 1;
+        
+        while (balanced.length < 8 && left <= right) {
+          balanced.push(allWheels[left]);
+          if (balanced.length < 8 && left !== right) {
+            balanced.push(allWheels[right]);
+          }
+          left++;
+          right--;
+        }
+        allWheels = balanced.slice(0, 8);
+      }
+    }
+    
+    // Contar cuántas ruedas se agregaron
+    const addedWheels = Math.max(0, 8 - totalWheels);
+    
+    return {
+      wheels: allWheels,
+      addedWheels,
+      originalWheels: totalWheels
+    };
+  };
+
   const handleSubmit = (e) => {
     e.preventDefault();
+    
     if (validate()) {
       // Convertir a formato para la función de cálculo
       const wheelsData = wheels
@@ -130,9 +344,38 @@ function WheelPositionForm({ onSubmit }) {
           quantity: parseInt(w.quantity)
         }));
       
+      // Procesar las ruedas (completar con recomendadas o seleccionar las mejores)
+      const { wheels: processedWheels, addedWheels, originalWheels } = processWheels(wheelsData, userData);
+      
+      // Contar cuántas hay de cada dureza
+      const wheelCounts = {};
+      processedWheels.forEach(wheel => {
+        wheelCounts[wheel] = (wheelCounts[wheel] || 0) + 1;
+      });
+      
+      // Formatear el resultado
+      const resultWheels = Object.entries(wheelCounts).map(([hardness, quantity]) => ({
+        hardness,
+        quantity,
+        isRecommended: !wheels.some(w => w.hardness === hardness)
+      }));
+      
+      // Determinar la estrategia de posicionamiento
+      let strategy = 'Configuración equilibrada';
+      if (userData.priority === 'Más agarre') {
+        strategy = 'Configuración para máximo agarre';
+      } else if (userData.priority === 'Más velocidad') {
+        strategy = 'Configuración para máxima velocidad';
+      }
+      
+      // Pasar los resultados al componente padre
       onSubmit({
-        wheels: wheelsData,
-        userData: userData
+        wheels: resultWheels,
+        userData: userData,
+        strategy,
+        addedWheels,
+        originalWheels,
+        hasMoreWheels: originalWheels > 8
       });
     }
   };
@@ -300,11 +543,71 @@ function WheelPositionForm({ onSubmit }) {
             Ruedas Disponibles
           </Typography>
           <Typography variant="body2" color="text.secondary" gutterBottom>
-            Ingresa las ruedas que tienes disponibles. Debes tener exactamente 8 ruedas en total.
+            Ingresa las ruedas que tienes disponibles (mínimo 1). 
+            {getTotalWheels() < 8 ? (
+              <Typography component="span" color="info.main" sx={{ fontWeight: 'bold' }}>
+                Se completarán con {8 - getTotalWheels()} ruedas recomendadas según tus preferencias.
+              </Typography>
+            ) : getTotalWheels() > 8 ? (
+              <Typography component="span" color="info.main" sx={{ fontWeight: 'bold' }}>
+                Se seleccionarán automáticamente las 8 mejores ruedas según tus preferencias.
+              </Typography>
+            ) : (
+              <Typography component="span" color="success.main" sx={{ fontWeight: 'bold' }}>
+                Tienes exactamente 8 ruedas. ¡Perfecto!
+              </Typography>
+            )}
           </Typography>
-          <Typography variant="h6" sx={{ mt: 2, color: getTotalWheels() === 8 ? 'success.main' : 'error.main' }}>
-            Total: {getTotalWheels()} / 8 ruedas
-          </Typography>
+          <Box sx={{ mt: 2, display: 'flex', alignItems: 'center', gap: 2 }}>
+            <Box sx={{ 
+              bgcolor: 'background.paper', 
+              p: 1, 
+              borderRadius: 1,
+              border: '1px solid',
+              borderColor: 'divider',
+              minWidth: '200px'
+            }}>
+              <Typography variant="subtitle2" color="text.secondary">Resumen de ruedas</Typography>
+              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mt: 0.5 }}>
+                <Typography 
+                  variant="h6" 
+                  sx={{ 
+                    color: getTotalWheels() > 0 ? 'success.main' : 'text.secondary',
+                    fontWeight: 'bold'
+                  }}
+                >
+                  {getTotalWheels()} ruedas
+                </Typography>
+                <Typography variant="body2" color="text.secondary">
+                  ingresadas
+                </Typography>
+                {getTotalWheels() > 0 && getTotalWheels() < 8 && (
+                  <>
+                    <Typography variant="body2" color="text.secondary">+</Typography>
+                    <Typography variant="body2" color="info.main" fontWeight="bold">
+                      {8 - getTotalWheels()} recomendadas
+                    </Typography>
+                  </>
+                )}
+              </Box>
+            </Box>
+            
+            {getTotalWheels() > 0 && getTotalWheels() < 8 && (
+              <Box sx={{ 
+                bgcolor: 'info.light', 
+                p: 1, 
+                borderRadius: 1,
+                display: 'flex',
+                alignItems: 'center',
+                gap: 1
+              }}>
+                <Info color="info" fontSize="small" />
+                <Typography variant="caption" color="info.dark">
+                  Las ruedas recomendadas se elegirán en base a tus preferencias de {userData.priority?.toLowerCase() || 'prioridad'}
+                </Typography>
+              </Box>
+            )}
+          </Box>
           {errors.total && (
             <FormHelperText error sx={{ mt: 1 }}>
               {errors.total}

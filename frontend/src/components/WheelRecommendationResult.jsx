@@ -1,6 +1,5 @@
 import React from 'react';
 import {
-  Paper,
   Typography,
   Box,
   Chip,
@@ -8,7 +7,10 @@ import {
   Divider,
   Alert,
   Card,
-  CardContent
+  CardContent,
+  Tooltip,
+  useMediaQuery,
+  useTheme
 } from '@mui/material';
 import {
   CheckCircle,
@@ -17,22 +19,36 @@ import {
   Settings
 } from '@mui/icons-material';
 
+// Importar imagen SVG
+import patinPosicionesImage from '../assets/patin-posiciones.svg';
+
+// Descripciones de perfiles
+const PROFILE_DESCRIPTIONS = {
+  'Elíptico': 'Perfil elíptico ofrece un buen equilibrio entre agarre y velocidad. Ideal para patinadores que buscan estabilidad y control en curvas, especialmente útil en pista y asfalto liso.',
+  'Bullet': 'Perfil Bullet, está optimizado para máxima velocidad. Reduce la resistencia al aire y mejora el rendimiento en rectas, ideal para competencias de velocidad en pista.',
+  'Más ancho para agarre': 'Perfil más ancho proporciona mayor superficie de contacto con el suelo, mejorando el agarre y la estabilidad. Ideal para skate cross, derrapes y terrenos irregulares.'
+};
+
 function WheelRecommendationResult({ result }) {
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
+
   if (!result || !result.recommendation) {
     return (
-      <Paper elevation={3} sx={{ p: 3, textAlign: 'center' }}>
+      <Box sx={{ p: 3, textAlign: 'center' }}>
         <Typography variant="h6" color="text.secondary">
           Completa el formulario y calcula tu recomendación
         </Typography>
-      </Paper>
+      </Box>
     );
   }
 
   const { recommendation, isFallback, matchScore } = result;
   const { hardness, profile, notes, mixedConfig, wheelSize } = recommendation;
+  const profileDescription = PROFILE_DESCRIPTIONS[profile] || 'Información del perfil no disponible';
 
   return (
-    <Paper elevation={3} sx={{ p: 3, height: '100%' }}>
+    <Box sx={{ p: 3 }}>
       <Typography variant="h5" gutterBottom sx={{ mb: 3, fontWeight: 'bold', display: 'flex', alignItems: 'center', gap: 1 }}>
         <CheckCircle sx={{ color: 'success.main' }} />
         Tu Recomendación
@@ -40,7 +56,7 @@ function WheelRecommendationResult({ result }) {
 
       {isFallback && (
         <Alert severity="info" sx={{ mb: 3 }}>
-          Esta es una recomendación general.
+          Esta es una recomendación general. Para una recomendación más precisa, completa todos los campos del formulario.
         </Alert>
       )}
 
@@ -48,7 +64,7 @@ function WheelRecommendationResult({ result }) {
       <Card sx={{ mb: 3, bgcolor: 'primary.light', color: 'primary.contrastText' }}>
         <CardContent>
           <Grid container spacing={2}>
-            <Grid item xs={6}>
+            <Grid item xs={12} sm={4}>
               <Typography variant="caption" display="block">
                 Dureza
               </Typography>
@@ -56,16 +72,54 @@ function WheelRecommendationResult({ result }) {
                 {hardness}
               </Typography>
             </Grid>
-            <Grid item xs={6}>
+            <Grid item xs={12} sm={4}>
               <Typography variant="caption" display="block">
                 Perfil
               </Typography>
-              <Typography variant="h6" fontWeight="bold">
-                {profile}
-              </Typography>
+              {isMobile ? (
+                <Box>
+                  <Typography 
+                    variant="h6" 
+                    fontWeight="bold"
+                  >
+                    {profile}
+                  </Typography>
+                  <Typography 
+                    variant="caption" 
+                    color="text.secondary"
+                    sx={{ 
+                      display: 'block',
+                      mt: 0.5,
+                      fontSize: '0.7rem',
+                      lineHeight: 1.4
+                    }}
+                  >
+                    {profileDescription}
+                  </Typography>
+                </Box>
+              ) : (
+                <Tooltip 
+                  title={profileDescription} 
+                  arrow
+                  placement="top"
+                >
+                  <Typography 
+                    variant="h6" 
+                    fontWeight="bold"
+                    sx={{ 
+                      cursor: 'help',
+                      textDecoration: 'underline',
+                      textDecorationStyle: 'dotted',
+                      textUnderlineOffset: '4px'
+                    }}
+                  >
+                    {profile}
+                  </Typography>
+                </Tooltip>
+              )}
             </Grid>
-            <Grid item xs={12}>
-              <Typography variant="caption" display="block" sx={{ mt: 1 }}>
+            <Grid item xs={12} sm={4}>
+              <Typography variant="caption" display="block">
                 Tamaño
               </Typography>
               <Typography variant="h6" fontWeight="bold">
@@ -104,6 +158,18 @@ function WheelRecommendationResult({ result }) {
               </Typography>
             </Box>
           )}
+          {/* Imagen de posicionamiento */}
+          <Box sx={{ mt: 3, display: 'flex', justifyContent: 'center' }}>
+            <Box
+              component="img"
+              src={patinPosicionesImage}
+              alt="Posicionamiento de ruedas"
+              sx={{
+                maxWidth: '50%',
+                height: 'auto'
+              }}
+            />
+          </Box>
         </Box>
       )}
 
@@ -122,6 +188,18 @@ function WheelRecommendationResult({ result }) {
               Esta configuración uniforme es más fácil de mantener y rotar.
             </Typography>
           </Alert>
+          {/* Imagen de posicionamiento */}
+          <Box sx={{ mt: 3, display: 'flex', justifyContent: 'center' }}>
+            <Box
+              component="img"
+              src={patinPosicionesImage}
+              alt="Posicionamiento de ruedas"
+              sx={{
+                maxWidth: '50%',
+                height: 'auto'
+              }}
+            />
+          </Box>
         </Box>
       )}
 
@@ -152,20 +230,35 @@ function WheelRecommendationResult({ result }) {
           color="primary"
           variant="outlined"
         />
-        <Chip
-          label={`Perfil: ${profile}`}
-          color="primary"
-          variant="outlined"
-        />
-        {matchScore > 0 && (
+        {isMobile ? (
           <Chip
-            label={`Coincidencia: ${matchScore}%`}
-            color="success"
+            label={`Perfil: ${profile}`}
+            color="primary"
             variant="outlined"
           />
+        ) : (
+          <Tooltip 
+            title={profileDescription} 
+            arrow
+            placement="top"
+          >
+            <Chip
+              label={`Perfil: ${profile}`}
+              color="primary"
+              variant="outlined"
+              sx={{ cursor: 'help' }}
+            />
+          </Tooltip>
         )}
+        {/*{matchScore > 0 && (*/}
+        {/*  <Chip*/}
+        {/*    label={`Coincidencia: ${matchScore}%`}*/}
+        {/*    color="success"*/}
+        {/*    variant="outlined"*/}
+        {/*  />*/}
+        {/*)}*/}
       </Box>
-    </Paper>
+    </Box>
   );
 }
 
