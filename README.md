@@ -1,73 +1,51 @@
-# Ruedly - Recomendador de Ruedas para Patines en Línea
+# Ruedly
 
-Aplicación web desarrollada con React 18 y Material UI v5 para recomendar ruedas de patines en línea según diferentes criterios de competencia.
+Monorepo de **Ruedly**, el recomendador de ruedas para patines en línea. El
+proyecto se organiza en tres aplicaciones independientes:
 
-## 🚀 Tecnologías
-
-- **React 18** con Functional Components y Hooks
-- **Vite** como bundler
-- **Material UI v5** para la interfaz
-- **@mui/icons-material** para iconos
-- **@emotion/react** y **@emotion/styled** para estilos
-
-## 📦 Instalación
-
-```bash
-npm install
+```
+.
+├── frontend/   # Aplicación web (React 18 + Vite + Material UI)
+├── backend/    # API / servicios (por implementar)
+└── mobile/      # Aplicación móvil (por implementar)
 ```
 
-## 🏃 Ejecutar en desarrollo
+## 📁 Estructura
+
+| Carpeta     | Descripción                                              | Estado        |
+|-------------|----------------------------------------------------------|---------------|
+| `frontend/` | Web app en React + Vite. Recomendador de ruedas.         | ✅ Activa      |
+| `backend/`  | API y lógica de servidor compartida por web y móvil.     | 🚧 Pendiente  |
+| `mobile/`    | App móvil que reutilizará la lógica de recomendación.    | 🚧 Pendiente  |
+
+Cada subproyecto tiene su propio `README.md` y su propia gestión de
+dependencias, por lo que pueden desarrollarse, instalarse y desplegarse de
+forma independiente.
+
+## 🚀 Inicio rápido
+
+### Frontend (web)
 
 ```bash
+cd frontend
+npm install
 npm run dev
 ```
 
-## 🏗️ Construir para producción
+### Backend
 
 ```bash
-npm run build
+cd backend
+# Ver backend/README.md
 ```
 
-## 📁 Estructura del Proyecto
+### Móvil
 
+```bash
+cd mobile
+# Ver mobile/README.md
 ```
-src/
-├── components/
-│   ├── Header.jsx
-│   ├── WheelRecommendationForm.jsx
-│   └── WheelRecommendationResult.jsx
-├── data/
-│   ├── wheelRulesMixed.json
-│   └── wheelRulesSingle.json
-├── utils/
-│   └── wheelRecommendation.js
-├── App.jsx
-└── main.jsx
-```
-
-## 🎯 Funcionalidades
-
-- Recomendación de ruedas basada en:
-  - Disciplina (velocidad, fondo, skate cross, derrapes, free style)
-  - Peso y edad
-  - Nivel de experiencia
-  - Estilo de patinar
-  - Tipo de suelo/pista
-  - Temperatura
-  - Prioridad (agarre vs velocidad)
-  - Tipo de dureza (numérica o estándar)
-  - Tamaño de ruedas
-  - Configuración del set (única, mixta automática, mixta personalizada)
-
-## 🎨 Características
-
-- Interfaz responsive con Material UI
-- Tema personalizado con tonos verdes/azules
-- Validación de formularios
-- Recomendaciones con fallback cuando no hay coincidencia exacta
-- Visualización clara de configuraciones mixtas por posición
 
 ## 📝 Licencia
 
-Este proyecto es de uso personal/educativo.
-
+Proyecto de uso personal/educativo.
