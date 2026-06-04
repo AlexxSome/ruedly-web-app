@@ -85,8 +85,22 @@ funciones originales del frontend sobre los mismos inputs.
 ## Roadmap
 
 Este backend avanza según la épica **#1**: scaffold (#3 ✅), motor portado
-(#4 ✅), `/metadata` (#5 ✅), persistencia de reglas (#6), endpoints REST +
-validación (#7), OpenAPI/Swagger (#8), tests (#9) y despliegue (#10).
+(#4 ✅), `/metadata` (#5 ✅), endpoints REST + validación (#7 ✅), persistencia
+de reglas (#6), OpenAPI/Swagger (#8), tests (#9) y despliegue (#10).
+
+## Endpoints
+
+| Método | Ruta | Descripción |
+|--------|------|-------------|
+| `GET`  | `/api/v1/health` | Estado del servicio |
+| `GET`  | `/api/v1/metadata` | Catálogo de factores (`?flow=recommendation\|positioning`) |
+| `POST` | `/api/v1/recommendation` | Recomendación a partir del perfil del patinador |
+| `POST` | `/api/v1/wheel-position` | Distribución de 8 ruedas en ambos patines |
+| `GET`  | `/api/v1/rules` | Reglas vigentes (lectura) |
+
+Las entradas se validan con DTOs (`class-validator`); los valores admitidos de
+los enums se toman del catálogo de `/metadata`. Un payload inválido devuelve
+**400** con formato uniforme `{ statusCode, error, message, path, timestamp }`.
 
 ## Endpoint de metadatos
 

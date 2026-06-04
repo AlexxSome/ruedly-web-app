@@ -282,3 +282,12 @@ export const METADATA: Metadata = {
     hardnessFactorKey: 'wheelHardness',
   },
 };
+
+/**
+ * Valores admitidos de un factor, para reutilizar en la validación de DTOs y
+ * mantenerla sincronizada con el catálogo de `/metadata`.
+ */
+export function allowedValues(key: string): (string | number)[] {
+  const factor = METADATA.factors.find((f) => f.key === key);
+  return (factor?.options ?? []).map((o) => o.value);
+}
