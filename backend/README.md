@@ -86,8 +86,29 @@ funciones originales del frontend sobre los mismos inputs.
 
 Este backend avanza según la épica **#1**: scaffold (#3 ✅), motor portado
 (#4 ✅), `/metadata` (#5 ✅), endpoints REST + validación (#7 ✅),
-OpenAPI/Swagger (#8 ✅), tests + cobertura (#9 ✅), persistencia de
-reglas (#6), y despliegue (#10).
+OpenAPI/Swagger (#8 ✅), tests + cobertura (#9 ✅), Docker + CI (#10 ✅) y
+persistencia de reglas (#6, pendiente de infra de DB).
+
+## Docker
+
+```bash
+# Build y ejecución con Docker
+docker build -t ruedly-backend .
+docker run -p 3000:3000 ruedly-backend
+
+# O con docker compose (sólo API)
+docker compose up --build
+# Con PostgreSQL preparado para el #6:
+docker compose --profile db up --build
+```
+
+La imagen es multi-stage (build TS → runtime ligero) e incluye un
+`HEALTHCHECK` contra `/api/v1/health`.
+
+## Integración continua
+
+`.github/workflows/backend-ci.yml` ejecuta, en cada push/PR que toque
+`backend/**`: `npm ci` → `lint` → `test:cov` → `build`.
 
 ## Tests y cobertura
 

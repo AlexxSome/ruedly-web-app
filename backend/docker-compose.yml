@@ -1,0 +1,33 @@
+# Entorno de desarrollo del backend de Ruedly.
+#
+# Por ahora sólo levanta la API (las reglas se sirven desde JSON). El servicio
+# `db` (PostgreSQL) queda preparado para el issue #6 (persistencia de reglas);
+# actívalo con: `docker compose --profile db up`.
+
+services:
+  backend:
+    build: .
+    ports:
+      - '3000:3000'
+    environment:
+      PORT: 3000
+      CORS_ORIGINS: ${CORS_ORIGINS:-}
+      # Para el #6:
+      # DATABASE_URL: postgres://ruedly:ruedly@db:5432/ruedly
+    restart: unless-stopped
+
+  db:
+    image: postgres:16-alpine
+    profiles: ['db']
+    environment:
+      POSTGRES_USER: ruedly
+      POSTGRES_PASSWORD: ruedly
+      POSTGRES_DB: ruedly
+    ports:
+      - '5432:5432'
+    volumes:
+      - ruedly_pgdata:/var/lib/postgresql/data
+    restart: unless-stopped
+
+volumes:
+  ruedly_pgdata:
