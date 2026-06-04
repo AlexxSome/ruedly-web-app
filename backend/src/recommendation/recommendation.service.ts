@@ -24,6 +24,11 @@ const NUMERIC_MODE = 'numérica (82A–90A)';
  */
 @Injectable()
 export class RecommendationService {
+  /** Devuelve todas las reglas vigentes (mixtas + de dureza única). */
+  getRules(): Rule[] {
+    return [...rulesMixed, ...rulesSingle];
+  }
+
   getRecommendation(form: RecommendationForm): RecommendationResult {
     // Validación básica de campos requeridos.
     if (
