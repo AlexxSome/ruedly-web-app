@@ -11,6 +11,7 @@
     "start:prod": "node dist/main.js",
     "lint": "eslint \"{src,test}/**/*.ts\" --fix",
     "test": "jest",
+    "test:cov": "jest --coverage",
     "openapi": "ts-node scripts/generate-openapi.ts"
   },
   "dependencies": {
@@ -59,9 +60,21 @@
       "^.+\\.(t|j)s$": "ts-jest"
     },
     "collectCoverageFrom": [
-      "**/*.(t|j)s"
+      "**/*.(t|j)s",
+      "!**/*.spec.ts",
+      "!main.ts",
+      "!swagger.ts",
+      "!**/*.module.ts"
     ],
     "coverageDirectory": "../coverage",
+    "coverageThreshold": {
+      "global": {
+        "branches": 75,
+        "functions": 90,
+        "lines": 90,
+        "statements": 90
+      }
+    },
     "testEnvironment": "node"
   }
 }
