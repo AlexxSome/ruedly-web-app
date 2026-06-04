@@ -85,8 +85,29 @@ funciones originales del frontend sobre los mismos inputs.
 ## Roadmap
 
 Este backend avanza según la épica **#1**: scaffold (#3 ✅), motor portado
-(#4 ✅), `/metadata` (#5 ✅), endpoints REST + validación (#7 ✅), persistencia
-de reglas (#6), OpenAPI/Swagger (#8), tests (#9) y despliegue (#10).
+(#4 ✅), `/metadata` (#5 ✅), endpoints REST + validación (#7 ✅),
+OpenAPI/Swagger (#8 ✅), persistencia de reglas (#6), tests (#9) y
+despliegue (#10).
+
+## Documentación de la API (OpenAPI/Swagger)
+
+Con el servidor levantado:
+
+- **Swagger UI**: `http://localhost:3000/api/docs`
+- **OpenAPI JSON**: `http://localhost:3000/api/docs-json`
+
+Para exportar el contrato a un fichero (lo consume el generador de cliente de
+la app móvil):
+
+```bash
+npm run openapi   # genera backend/openapi.json
+```
+
+### CORS
+
+Los orígenes permitidos se configuran con la variable `CORS_ORIGINS` (lista
+separada por comas). Si está vacía, se permiten todos los orígenes (útil en
+desarrollo).
 
 ## Endpoints
 
