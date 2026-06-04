@@ -27,8 +27,8 @@ La aplicación está en español (UI y comentarios de código).
 ```
 .
 ├── frontend/   # App web (React 18 + Vite + Material UI). Única app activa hoy.
-├── backend/    # API / servicios. 🚧 Scaffolding, sin implementar.
-├── mobile/     # App móvil. 🚧 Scaffolding, sin implementar.
+├── backend/    # API REST (NestJS + TypeScript). Motor de recomendación.
+├── mobile/     # App móvil (Flutter). Scaffold.
 ├── README.md   # README del monorepo.
 ├── AGENTS.md   # Este archivo (canónico).
 └── CLAUDE.md   # Puntero a AGENTS.md.
@@ -36,13 +36,14 @@ La aplicación está en español (UI y comentarios de código).
 
 Cada subproyecto es **independiente**: tiene su propio `README.md` y su propia
 gestión de dependencias. Trabaja siempre **dentro** del subproyecto
-correspondiente (ejecuta `npm` desde `frontend/`, no desde la raíz).
+correspondiente (ejecuta `npm` desde `frontend/`/`backend/`, `flutter` desde
+`mobile/`, no desde la raíz).
 
-| Carpeta     | Estado        | Descripción                                          |
-|-------------|---------------|------------------------------------------------------|
-| `frontend/` | ✅ Activa      | Web app React + Vite. Recomendador y posicionador.   |
-| `backend/`  | 🚧 Pendiente  | API que expondrá el motor de recomendación.          |
-| `mobile/`   | 🚧 Pendiente  | App móvil que reutilizará la lógica.                 |
+| Carpeta     | Estado          | Descripción                                          |
+|-------------|-----------------|------------------------------------------------------|
+| `frontend/` | ✅ Activa        | Web app React + Vite. Recomendador y posicionador.   |
+| `backend/`  | ✅ API operativa | API REST NestJS del motor de recomendación.          |
+| `mobile/`   | 🟡 Scaffold      | App móvil Flutter que consume la API.                |
 
 ---
 
@@ -161,11 +162,15 @@ frontend/
   `Firm/XFirm/XXFirm` como `82A`–`90A`).
 - `determinePositioningStrategy` calcula `frontBias` y `speedBias` (0–1)
   ajustando por prioridad, disciplina, estilo, suelo y temperatura.
-- Reparte las 8 ruedas entre `rightFoot[4]` y `leftFoot[4]`:
-  - `frontBias ≥ 0.5`: más blandas delante (agarre), más duras atrás.
-  - `frontBias < 0.5`: más duras delante (velocidad pura).
+- Reparte las 8 ruedas entre `rightFoot[4]` y `leftFoot[4]` con
+  **distribución equitativa** (cada dureza se reparte entre ambos pies y se
+  equilibra a 2 delanteras + 2 traseras por pie):
+  - `frontBias ≥ 0.5`: las durezas más blandas van delante (agarre).
+  - `frontBias < 0.5`: las más duras van delante (velocidad).
   - Si todas son iguales: distribución uniforme.
 - Devuelve `{ rightFoot, leftFoot, strategy, userContext }`.
+
+> El backend (`backend/src/positioning`) es un port 1:1 de esta función.
 
 ### 3.7 Esquema de una regla (`data/*.json`)
 
@@ -223,18 +228,87 @@ Mantén estos valores consistentes entre los formularios, el motor y los JSON:
 
 ---
 
-## 4. Backend (`backend/`) y Mobile (`mobile/`)
+## 4. Backend (`backend/`)
 
-Aún **sin implementar**; sólo contienen un `README.md` de scaffolding. Antes
-de añadir código:
+**API REST en NestJS 10 + TypeScript** que expone el motor de recomendación.
+Es la fuente de verdad de la lógica, compartida por web y móvil.
 
-1. Define el stack en el `README.md` correspondiente (p. ej. backend con
-   Node/Express o NestJS; mobile con React Native + Expo).
-2. Crea su propia gestión de dependencias **dentro** de la carpeta.
+### Stack y comandos
 
-Visión: el **backend** expondrá el motor de recomendación (hoy en
-`frontend/src/utils` + `data/*.json`) como API, y **mobile** reutilizará esa
-lógica para ofrecer la misma experiencia en iOS/Android.
+```bash
+cd backend
+cp .env.example .env
+npm install
+npm run start:dev   # http://localhost:3000/api/v1
+npm run build       # compila a dist/
+npm run lint
+npm test            # Jest
+npm run test:cov    # con cobertura (umbrales en package.json)
+npm run openapi     # exporta openapi.json
+```
+
+Variables de entorno: `PORT` (3000), `CORS_ORIGINS` (lista separada por comas;
+vacío = todos).
+
+### Arquitectura
+
+Todas las rutas bajo `/api/v1`. Módulos en `src/`:
+
+```
+backend/src/
+├── main.ts                 # bootstrap: prefijo, ValidationPipe, filtro de errores, Swagger, CORS
+├── app.module.ts
+├── common/                 # filtro de excepciones global (formato uniforme)
+├── health/                 # GET /health
+├── metadata/               # GET /metadata (catálogo de factores) + allowedValues()
+├── recommendation/         # motor de recomendación (port 1:1 del frontend)
+│   ├── data/*.json         # reglas (28); se migrarán a DB en el #6
+│   ├── dto/                # validación (class-validator)
+│   └── recommendation.{service,controller,module}.ts
+└── positioning/            # motor de posicionamiento (port de develop)
+    ├── dto/
+    └── positioning.{service,controller,module}.ts
+```
+
+- Los **servicios** (`RecommendationService`, `PositioningService`) son ports
+  **1:1** de `frontend/src/utils/*`; los `*.spec.ts` son **tests de paridad**
+  contra valores "golden" del frontend. No cambies su lógica sin actualizar la
+  paridad.
+- La **validación** de DTOs toma los valores admitidos del catálogo de
+  `/metadata` (`allowedValues()`), para no duplicarlos.
+
+### Endpoints
+
+| Método | Ruta | Descripción |
+|--------|------|-------------|
+| `GET`  | `/api/v1/health` | Estado |
+| `GET`  | `/api/v1/metadata` | Catálogo de factores (`?flow=recommendation\|positioning`) |
+| `POST` | `/api/v1/recommendation` | Recomendación |
+| `POST` | `/api/v1/wheel-position` | Posicionamiento de 8 ruedas |
+| `GET`  | `/api/v1/rules` | Reglas vigentes |
+
+Documentación OpenAPI/Swagger en `/api/docs` (JSON en `/api/docs-json`).
+Errores con formato uniforme `{ statusCode, error, message, path, timestamp }`.
+
+> Pendiente: **#6** (persistencia de reglas en PostgreSQL + Prisma; hoy se
+> sirven desde JSON empaquetado).
+
+## 4b. Mobile (`mobile/`)
+
+**App Flutter** (Dart) que consume la API del backend. Estado: **scaffold**
+(#11). Stack: `flutter_riverpod` (estado), `go_router` (navegación);
+`dio`/`freezed` y la caché offline llegan en issues posteriores.
+
+```bash
+cd mobile
+flutter pub get
+flutter run --dart-define=API_BASE_URL=http://10.0.2.2:3000/api/v1
+flutter analyze && flutter test
+```
+
+Estructura **feature-first** en `lib/` (`core/{theme,router,env}`,
+`features/{home,recommendation,positioning}`). La URL base de la API se inyecta
+con `--dart-define=API_BASE_URL`. Tema verde/azul coherente con la web.
 
 ---
 
@@ -260,6 +334,8 @@ lógica para ofrecer la misma experiencia en iOS/Android.
 - **No versiones** artefactos de build ni cachés (`dist/`, `node_modules/`,
   `.vite/`, `.expo/`, `*.apk`, `*.ipa`, …); ya están en `.gitignore`.
 - **No crees Pull Requests** salvo que se pida explícitamente.
-- Tras un cambio que afecte al frontend, verifica con `npm run build`.
+- Verifica tras cada cambio: frontend con `npm run build`; backend con
+  `npm run lint` + `npm test` (mantén la **paridad** de los motores y la
+  cobertura sobre los umbrales); móvil con `flutter analyze` + `flutter test`.
 - Si actualizas este archivo, recuerda que `CLAUDE.md` sólo lo referencia: no
   necesitas duplicar contenido allí.
