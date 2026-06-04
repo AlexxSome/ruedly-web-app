@@ -85,5 +85,19 @@ funciones originales del frontend sobre los mismos inputs.
 ## Roadmap
 
 Este backend avanza según la épica **#1**: scaffold (#3 ✅), motor portado
-(#4 ✅), `/metadata` (#5), persistencia de reglas (#6), endpoints REST +
+(#4 ✅), `/metadata` (#5 ✅), persistencia de reglas (#6), endpoints REST +
 validación (#7), OpenAPI/Swagger (#8), tests (#9) y despliegue (#10).
+
+## Endpoint de metadatos
+
+`GET /api/v1/metadata` devuelve el **catálogo de factores y valores admitidos**
+(disciplinas, suelos, estilos, temperaturas, durezas, tamaños, modos de set…),
+los pesos del scoring y la config del posicionamiento. Es la **fuente única**
+para que web y móvil construyan sus formularios; añadir un valor a un factor no
+requiere cambios en los clientes. Soporta filtrar por flujo:
+
+```bash
+curl http://localhost:3000/api/v1/metadata
+curl "http://localhost:3000/api/v1/metadata?flow=recommendation"
+curl "http://localhost:3000/api/v1/metadata?flow=positioning"
+```
