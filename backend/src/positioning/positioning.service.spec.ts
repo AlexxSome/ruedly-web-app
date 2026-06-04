@@ -70,6 +70,74 @@ describe('PositioningService', () => {
     });
   });
 
+  /** Cuenta de cada dureza en una lista (multiset). */
+  const tally = (arr: string[]): Record<string, number> =>
+    arr.reduce<Record<string, number>>((acc, h) => {
+      acc[h] = (acc[h] || 0) + 1;
+      return acc;
+    }, {});
+
+  it('cubre ajustes de estrategia por disciplina/estilo/suelo/temperatura', () => {
+    const result = service.calculateWheelPosition({
+      wheels: [
+        { hardness: 'Firm', quantity: 4 },
+        { hardness: 'XFirm', quantity: 4 },
+      ],
+      userData: {
+        disciplina: 'fondo',
+        pesoKg: 68,
+        experiencia: 'avanzado',
+        estilo: 'tecnico',
+        suelo: 'asfalto rugoso',
+        temperatura: 'frio',
+        priority: 'Más agarre',
+      },
+    });
+    expect(result.strategy).toContain('prioriza agarre delante');
+    expect(result.rightFoot).toHaveLength(4);
+    expect(result.leftFoot).toHaveLength(4);
+  });
+
+  it('cubre disciplina skate cross + estilo explosivo + calor', () => {
+    const result = service.calculateWheelPosition({
+      wheels: [
+        { hardness: '84A', quantity: 4 },
+        { hardness: '88A', quantity: 4 },
+      ],
+      userData: {
+        disciplina: 'skate cross',
+        pesoKg: 75,
+        experiencia: 'intermedio',
+        estilo: 'explosivo (velocidad)',
+        suelo: 'calle',
+        temperatura: 'caluroso',
+        priority: 'Más velocidad',
+      },
+    });
+    expect(result.error).toBeUndefined();
+    expect(result.rightFoot).toHaveLength(4);
+    expect(result.leftFoot).toHaveLength(4);
+  });
+
+  it('conserva el multiset de ruedas en un set desbalanceado (4+4 por pie)', () => {
+    const wheels = [
+      { hardness: '82A', quantity: 1 },
+      { hardness: '84A', quantity: 1 },
+      { hardness: '86A', quantity: 2 },
+      { hardness: '90A', quantity: 4 },
+    ];
+    const result = service.calculateWheelPosition({
+      wheels,
+      userData: baseUser,
+    });
+    expect(result.error).toBeUndefined();
+    expect(result.rightFoot).toHaveLength(4);
+    expect(result.leftFoot).toHaveLength(4);
+    const combined = [...(result.rightFoot ?? []), ...(result.leftFoot ?? [])];
+    expect(combined).toHaveLength(8);
+    expect(tally(combined)).toEqual({ '82A': 1, '84A': 1, '86A': 2, '90A': 4 });
+  });
+
   it('set numérico priorizando velocidad (paridad)', () => {
     const input: PositioningInput = {
       wheels: [

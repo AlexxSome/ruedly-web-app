@@ -133,6 +133,85 @@ describe('RecommendationService', () => {
     });
   });
 
+  it('fallback en modo estándar cuando no hay regla mixta (paridad)', () => {
+    const input: RecommendationForm = {
+      disciplina: 'derrapes',
+      pesoKg: 90,
+      edad: 45,
+      experiencia: 'alto rendimiento',
+      estilo: 'tecnico',
+      suelo: 'indoor',
+      temperatura: 'caluroso',
+      priority: 'Más velocidad',
+      modoDureza: 'estándar (Firm/XFirm/XXFirm)',
+      wheelSize: 90,
+      setConfigMode: 'Automática según la regla',
+    };
+    expect(service.getRecommendation(input)).toEqual({
+      recommendation: {
+        hardness: 'XFirm',
+        profile: 'Elíptico',
+        notes: 'Recomendación general basada en tus preferencias.',
+        mixedConfig: null,
+        isFallback: true,
+        wheelSize: 90,
+      },
+      matchScore: 0,
+      isFallback: true,
+    });
+  });
+
+  it('mixto control/agarre estándar genera posiciones Firm/Firm/Firm/XFirm (paridad)', () => {
+    const input: RecommendationForm = {
+      disciplina: 'skate cross',
+      pesoKg: 80,
+      edad: 28,
+      experiencia: 'avanzado',
+      estilo: 'mixto',
+      suelo: 'asfalto rugoso',
+      temperatura: 'templado',
+      priority: 'Balance entre agarre y velocidad',
+      modoDureza: 'estándar (Firm/XFirm/XXFirm)',
+      wheelSize: 90,
+      setConfigMode: 'Mixto: configuración de control y agarre',
+    };
+    const result = service.getRecommendation(input);
+    expect(result.recommendation?.mixedConfig?.positions).toEqual({
+      '1': 'Firm',
+      '2': 'Firm',
+      '3': 'Firm',
+      '4': 'XFirm',
+    });
+    expect(result.ruleId).toBe(
+      'skate_cross_asfalto_rugoso_mixto_standard_50_85kg',
+    );
+    expect(result.isFallback).toBe(false);
+  });
+
+  it('mixto agarre/velocidad numérico desplaza ±1 la dureza base (paridad)', () => {
+    const input: RecommendationForm = {
+      disciplina: 'velocidad',
+      pesoKg: 70,
+      edad: 22,
+      experiencia: 'intermedio',
+      estilo: 'mixto',
+      suelo: 'pista',
+      temperatura: 'templado',
+      priority: 'Balance entre agarre y velocidad',
+      modoDureza: 'numérica (82A–90A)',
+      wheelSize: 110,
+      setConfigMode: 'Mixto: más agarre delante, más velocidad atrás',
+    };
+    const result = service.getRecommendation(input);
+    expect(result.recommendation?.hardness).toBe('86A');
+    expect(result.recommendation?.mixedConfig?.positions).toEqual({
+      '1': '85A',
+      '2': '85A',
+      '3': '87A',
+      '4': '87A',
+    });
+  });
+
   it('usa fallback con mixto control/agarre numérico cuando no hay regla (paridad)', () => {
     const input: RecommendationForm = {
       disciplina: 'free style (calle)',

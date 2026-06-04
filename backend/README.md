@@ -86,8 +86,19 @@ funciones originales del frontend sobre los mismos inputs.
 
 Este backend avanza según la épica **#1**: scaffold (#3 ✅), motor portado
 (#4 ✅), `/metadata` (#5 ✅), endpoints REST + validación (#7 ✅),
-OpenAPI/Swagger (#8 ✅), persistencia de reglas (#6), tests (#9) y
-despliegue (#10).
+OpenAPI/Swagger (#8 ✅), tests + cobertura (#9 ✅), persistencia de
+reglas (#6), y despliegue (#10).
+
+## Tests y cobertura
+
+```bash
+npm test          # ejecuta los tests
+npm run test:cov  # con informe de cobertura (umbrales en package.json)
+```
+
+Incluye **tests de paridad** de los motores (comparados con el frontend),
+tests de `/metadata`, del filtro de errores y **e2e** de los endpoints. La
+cobertura ronda el 95% de líneas y 100% de funciones.
 
 ## Documentación de la API (OpenAPI/Swagger)
 
