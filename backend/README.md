@@ -49,21 +49,41 @@ curl http://localhost:3000/api/v1/health
 ```
 backend/
 ├── src/
-│   ├── main.ts            # bootstrap: prefijo /api/v1, CORS, puerto
-│   ├── app.module.ts      # módulo raíz (ConfigModule global)
-│   └── health/            # endpoint de salud
-│       ├── health.controller.ts
-│       ├── health.module.ts
-│       └── health.controller.spec.ts
+│   ├── main.ts                # bootstrap: prefijo /api/v1, CORS, puerto
+│   ├── app.module.ts          # módulo raíz (ConfigModule global)
+│   ├── health/                # endpoint de salud
+│   ├── recommendation/        # motor de recomendación (port del frontend)
+│   │   ├── data/              # reglas en JSON (single + mixed)
+│   │   ├── recommendation.types.ts
+│   │   ├── recommendation.service.ts
+│   │   ├── recommendation.service.spec.ts   # tests de paridad
+│   │   └── recommendation.module.ts
+│   └── positioning/           # motor de posicionamiento de ruedas
+│       ├── positioning.types.ts
+│       ├── positioning.service.ts
+│       ├── positioning.service.spec.ts      # tests de paridad
+│       └── positioning.module.ts
 ├── .env.example
 ├── nest-cli.json
 ├── tsconfig.json
 └── package.json
 ```
 
+## Motor de recomendación y posicionamiento
+
+`RecommendationService` y `PositioningService` son **ports fieles (1:1)** de la
+lógica del frontend (`frontend/src/utils/wheelRecommendation.js` y
+`calculateWheelPosition.js`). Los tests `*.spec.ts` son **tests de paridad**:
+comparan la salida del backend con valores "golden" generados ejecutando las
+funciones originales del frontend sobre los mismos inputs.
+
+> Las reglas se cargan por ahora desde JSON empaquetado en
+> `src/recommendation/data/`. Su migración a base de datos se aborda en el
+> issue **#6**. Los endpoints HTTP que exponen estos servicios se añaden en el
+> issue **#7**.
+
 ## Roadmap
 
-Este scaffold corresponde al issue de inicialización del backend. Los
-siguientes pasos (motor de recomendación, `/metadata`, persistencia de reglas,
-endpoints REST, OpenAPI/Swagger, tests y despliegue) están descritos en la
-épica **#1** y sus issues asociados.
+Este backend avanza según la épica **#1**: scaffold (#3 ✅), motor portado
+(#4 ✅), `/metadata` (#5), persistencia de reglas (#6), endpoints REST +
+validación (#7), OpenAPI/Swagger (#8), tests (#9) y despliegue (#10).
