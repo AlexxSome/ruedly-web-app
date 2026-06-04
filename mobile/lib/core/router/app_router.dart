@@ -1,0 +1,15 @@
+import 'package:go_router/go_router.dart';
+
+import '../../features/home/presentation/home_screen.dart';
+
+/// Configuración de navegación declarativa de la app.
+final GoRouter appRouter = GoRouter(
+  initialLocation: '/',
+  routes: [
+    GoRoute(
+      path: '/',
+      name: 'home',
+      builder: (context, state) => const HomeScreen(),
+    ),
+  ],
+);
